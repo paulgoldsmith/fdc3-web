@@ -18,24 +18,15 @@ For most development running `npm start` will be sufficient to test implementati
 
 ## Commands
 
-The command line functions can be executed simply from the the VSCode command line window without any additional module loads. This is because the VSCode workspace is already configured to load the modules for you: 
-
-```bash
-$ module load ossjs/node/20.15.1
-$ module load msde/git
-```
-
-Core commands
-
 ```typescript
 
 npm install // Install all package dependencies
 
+npm run build // Run a simple build
+
 npm run test // Run tests on the command line
 
 npm run lint // Checks the code for lint errors
-
-npm run build // Run a simple build
 
 npm run build-release // Run a full build (Compile, Tests, Lint)
 
