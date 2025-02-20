@@ -1,0 +1,36 @@
+{
+    "name": "@morgan-stanley/fdc3-web-monorepo",
+    "version": "0.1.4",
+    "license": "Apache-2.0",
+    "author": "Morgan Stanley",
+    "scripts": {
+        "clean": "nx run-many -t clean --excludeTaskDependencies && rimraf build ../packages ../install",
+        "lint-fix": "nx run-many -t lint-fix --excludeTaskDependencies",
+        "lint": "nx run-many -t lint --excludeTaskDependencies",
+        "build": "nx run-many -t build",
+        "test": "nx run-many -t test --excludeTaskDependencies",
+        "start": "nx run-many -t start  --excludeTaskDependencies",
+        "copy:artifacts": "copyfiles -u 1 \"build/**/*\" \"../install/common/\"",
+        "generate-docs": "nx run-many -t generate-docs",
+        "prebuild-release": "npm run clean",
+        "build-release": "npm run lint -- --skip-nx-cache && npm run build -- --skip-nx-cache && npm run test -- --skip-nx-cache ",
+        "postbuild-release": "npm run copy:artifacts && npm run generate-docs"
+    },
+    "workspaces": [
+        "projects/*"
+    ],
+    "devDependencies": {
+        "@nx/eslint": "19.7.3",
+        "@nx/jest": "19.7.3",
+        "@nx/web": "19.7.3",
+        "@nx/webpack": "19.7.3",
+        "copyfiles": "^2.4.1",
+        "eslint-plugin-header": "^3.1.1",
+        "jest": "^29.7.0",
+        "nx": "19.7.3",
+        "rimraf": "^6.0.1",
+        "ts-jest": "^29.2.5",
+        "uuid": "^10.0.0",
+        "webpack-cli": "^5.1.4"
+    }
+}

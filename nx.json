@@ -1,0 +1,54 @@
+{
+    "$schema": "./node_modules/nx/schemas/nx-schema.json",
+    "targetDefaults": {
+        "clean": {
+            "dependsOn": ["^clean"]
+        },
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["{workspaceRoot}/dist/"],
+            "cache": true
+        },
+        "test": {
+            "dependsOn": ["^test"],
+            "outputs": [
+                "{workspaceRoot}/build/coverage-results/",
+                "{workspaceRoot}/build/test-results/"
+            ],
+            "cache": true
+        },
+        "lint": {
+            "dependsOn": ["^lint"],
+            "cache": true
+        },
+        "generate-docs": {
+            "dependsOn": ["^generate-docs"]
+        },
+        "start": {
+            "dependsOn": ["^start"]
+        }  
+    },
+    "defaultBase": "main",
+    "plugins": [
+        {
+            "plugin": "@nx/eslint/plugin",
+            "options": {
+                "targetName": "eslint:lint"
+            }
+        },
+        {
+            "plugin": "@nx/jest/plugin",
+            "options": {
+                "targetName": "jest:test"
+            }
+        },
+        {
+            "plugin": "@nx/webpack/plugin",
+            "options": {
+                "buildTargetName": "webpack:build",
+                "serveTargetName": "webpack:serve",
+                "previewTargetName": "preview"
+            }
+        }
+    ]
+}

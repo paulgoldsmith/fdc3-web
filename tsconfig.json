@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "module": "ES2022",
+        "lib": [
+            "ES2022",
+            "dom"
+        ],
+        "target": "ES2022",
+        "moduleResolution": "node",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "baseUrl": ".",
+        "sourceMap": true,
+        "mapRoot": "./",
+        "declaration": true,
+        "downlevelIteration": true,
+        "skipLibCheck": false,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "useDefineForClassFields": false,
+        "emitDecoratorMetadata": true,
+        "inlineSources": true,
+        "paths": {
+            "@morgan-stanley/fdc3-web": [
+                "projects/lib/dist/"
+            ],
+            "@morgan-stanley/fdc3-web-messaging-provider": [
+                "projects/messaging-provider/dist/"
+            ],
+            "@morgan-stanley/fdc3-web-ui-provider": [
+                "projects/ui-provider/dist/"
+            ]
+        }
+    }
+}

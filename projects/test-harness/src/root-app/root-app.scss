@@ -1,0 +1,34 @@
+@import '../styles.scss';
+
+.fth-app,
+#fth-settings-cnt {
+    width: 20%;
+    min-width: 400px;
+}
+
+.root-apps-container .fth-app {
+    width: auto;
+    flex: none;
+
+    iframe {
+        min-width: 100%;
+        resize: horizontal;
+    }
+}
+
+.fth-intents-cnt {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.fth-app-cross-origin {
+    border-style: dashed;
+}
+
+ms-app-resolver {
+    --ms-app-resolver-popup-body-bg-color: var(--bs-body-bg);
+    --ms-app-resolver-app-display-btn-bg-color: var(--bs-body-bg);
+    --ms-app-resolver-popup-header-bg-color: var(--bs-primary-bg-subtle);
+    --ms-app-resolver-app-display-btn-hover-bg-color: var(--bs-primary-bg-subtle);
+    --ms-app-resolver-popup-dismiss-btn-bg-color: var(--bs-body-bg);
+}

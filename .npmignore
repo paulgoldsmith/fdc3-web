@@ -1,0 +1,17 @@
+node_modules/
+scripts/
+spec/
+reports/
+build/
+main/
+jenkins-pipelines/
+projects/
+.vscode/
+.angular/
+.nx/
+dist/
+
+tsconfig*.json
+
+*.tgz
+**/*.spec.*

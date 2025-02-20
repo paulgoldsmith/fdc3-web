@@ -1,0 +1,481 @@
+{
+    "applications": [
+        {
+            "title": "App-1-root.com",
+            "appId": "app-1-root",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4300/app-1-root.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewAnalysis": {
+                            "contexts": [
+                                "fdc3.instrument"
+                            ]
+                        },
+                        "ViewChart": {
+                            "contexts": [
+                                "fdc3.instrument"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "StartCall": [
+                            "fdc3.contact"
+                        ],
+                        "StartChat": [
+                            "fdc3.contact"
+                        ],
+                        "ViewResearch": [],
+                        "ViewNews": [
+                            "fdc3.contact",
+                            "fdc3.instrument"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-2-root.com",
+            "appId": "app-2-root",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4300/app-2-root.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "StartCall": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        },
+                        "StartChat": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "ViewAnalysis": [
+                            "fdc3.instrument"
+                        ],
+                        "ViewChart": [
+                            "fdc3.instrument"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-1-domain-A.com",
+            "appId": "app-1-domain-A",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4301/app-1-domain-A.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "StartCall": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        },
+                        "ViewResearch": {
+                            "contexts": []
+                        }
+                    },
+                    "raises": {
+                        "ViewAnalysis": [
+                            "fdc3.instrument"
+                        ],
+                        "ViewChart": [
+                            "fdc3.instrument"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-2-domain-A.com",
+            "appId": "app-2-domain-A",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4301/app-2-domain-A.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "StartEmail": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        },
+                        "ViewHoldings": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.currency"
+                            ]
+                        },
+                        "ViewChart": {
+                            "contexts": [
+                                "fdc3.chart"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "StartCall": [
+                            "fdc3.contact"
+                        ],
+                        "StartChat": [
+                            "fdc3.contact",
+                            "fdc3.message"
+                        ],
+                        "ViewResearch": []
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-1-domain-B.com",
+            "appId": "app-1-domain-B",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4302/app-1-domain-B.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewOrders": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.currency"
+                            ]
+                        },
+                        "ViewChart": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.chart"
+                            ]
+                        },
+                        "ViewQuote": {
+                            "contexts": [
+                                "fdc3.currency"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "StartCall": [
+                            "fdc3.contact"
+                        ],
+                        "ViewResearch": [
+                            "fdc3.organization"
+                        ],
+                        "ViewChart": [
+                            "fdc3.instrument",
+                            "fdc3.chart",
+                            "fdc3.position"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-2-domain-B.com",
+            "appId": "app-2-domain-B",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4302/app-2-domain-B.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewAnalysis": {
+                            "contexts": [
+                                "fdc3.instrument"
+                            ]
+                        },
+                        "ViewChart": {
+                            "contexts": [
+                                "fdc3.chart"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "CreateInteraction": [
+                            "fdc3.contact",
+                            "fdc3.action"
+                        ],
+                        "ViewNews": [
+                            "fdc3.contact",
+                            "fdc3.instrument",
+                            "fdc3.organization"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-1-domain-C.com",
+            "appId": "app-1-domain-C",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4303/app-1-domain-C.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewAnalysis": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.organization",
+                                "fdc3.position"
+                            ]
+                        },
+                        "ViewChart": {
+                            "contexts": [
+                                "fdc3.chart"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "CreateInteraction": [
+                            "fdc3.contact",
+                            "fdc3.message"
+                        ],
+                        "StartChat": [
+                            "fdc3.contact"
+                        ],
+                        "StartEmail": [
+                            "fdc3.contact",
+                            "fdc3.email"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-2-domain-C.com",
+            "appId": "app-2-domain-C",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4303/app-2-domain-C.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewInteraction": {
+                            "contexts": [
+                                "fdc3.instrument"
+                            ]
+                        },
+                        "ViewMessages": {
+                            "contexts": [
+                                "fdc3.message"
+                            ]
+                        },
+                        "StartChat": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "StartCall": [
+                            "fdc3.contact"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-1-domain-D.com",
+            "appId": "app-1-domain-D",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4304/app-1-domain-D.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewNews": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.organization"
+                            ]
+                        },
+                        "ViewOrders": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.position",
+                                "fdc3.currency",
+                                "fdc3.portfolio"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "StartCall": [
+                            "fdc3.contact"
+                        ],
+                        "StartChat": [
+                            "fdc3.contact"
+                        ],
+                        "ViewResearch": [
+                            "fdc3.currency",
+                            "fdc3.portfolio"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-2-domain-D.com",
+            "appId": "app-2-domain-D",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4304/app-2-domain-D.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewAnalysis": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.portfolio"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "ViewResearch": [
+                            "fdc3.organization"
+                        ],
+                        "ViewNews": [
+                            "fdc3.contact",
+                            "fdc3.instrument",
+                            "fdc3.organization"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-1-domain-E.com",
+            "appId": "app-1-domain-E",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4305/app-1-domain-E.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "StartEmail": {
+                            "contexts": [
+                                "fdc3.email",
+                                "fdc3.contact"
+                            ]
+                        },
+                        "StartChat": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "ViewResearch": [
+                            "fdc3.currency"
+                        ],
+                        "ViewNews": [
+                            "fdc3.contact",
+                            "fdc3.instrument",
+                            "fdc3.portfolio"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "App-2-domain-E.com",
+            "appId": "app-2-domain-E",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4305/app-2-domain-E.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewProfile": {
+                            "contexts": [
+                                "fdc3.contact"
+                            ]
+                        },
+                        "ViewMessages": {
+                            "contexts": [
+                                "fdc3.message",
+                                "fdc3.contact"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "StartCall": [
+                            "fdc3.contact"
+                        ],
+                        "StartChat": [
+                            "fdc3.contact",
+                            "fdc3.message"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "test-lit-app.com",
+            "appId": "test-lit-app",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4306/test-lit-app.html"
+            },
+            "interop": {
+                "intents": {
+                    "listensFor": {
+                        "ViewAnalysis": {
+                            "contexts": [
+                                "fdc3.instrument",
+                                "fdc3.portfolio"
+                            ]
+                        },
+                        "ViewChart": {
+                            "contexts": [
+                                "fdc3.instrument"
+                            ]
+                        },
+                        "ViewHoldings": {
+                            "contexts": [
+                                "fdc3.portfolio"
+                            ]
+                        }
+                    },
+                    "raises": {
+                        "ViewResearch": [
+                            "fdc3.organization"
+                        ],
+                        "ViewNews": [
+                            "fdc3.contact",
+                            "fdc3.currency"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "FDC3 Workbench",
+            "appId": "fdc3-workbench",
+            "type": "web",
+            "details": {
+                "url": "http://localhost:4001/toolbox/fdc3-workbench/"
+            }
+        }
+    ]
+}
