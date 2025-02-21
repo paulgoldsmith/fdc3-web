@@ -474,7 +474,7 @@
             "appId": "fdc3-workbench",
             "type": "web",
             "details": {
-                "url": "http://localhost:4001/toolbox/fdc3-workbench/"
+                "url": "https://fdc3.finos.org/toolbox/fdc3-workbench/"
             }
         }
     ]
