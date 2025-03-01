@@ -18,7 +18,6 @@ npm install @morgan-stanley/fdc3-web-messaging-provider
 * `lib` - The actual implementation of the fdc3 code. This library will be published for use in other applications.
 * `messaging-provider` - A messaging provider for the fdc3 library. This is an implementation of the messaging-provider interface that provides communications between frames and windows, including in other domains. This will be published for use in other applications.
 * `ui-provider` - A UI provider for the fdc3 library. This provides a Resolver and Channel Selector. This will be published for use in other applications.
-* `finos` - A Finos provider for the fdc3 library that contains types not currently available in the @finos/fdc3 library.
 * `test-harness` - A Lit app for testing local messaging between different apps working in the same context. Will depend on `lib`.
 
 For most development running `npm start` will be sufficient to test implementation and cross-frame / cross origin communication. This will build and run `test-harness`. 
@@ -27,7 +26,7 @@ For most development running `npm start` will be sufficient to test implementati
 
 ```typescript
 
-npm install // Install all package dependencies
+npm ci // Clean install all package dependencies
 
 npm run build // Run a simple build
 
