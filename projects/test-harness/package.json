@@ -52,9 +52,9 @@
     },
     "dependencies": {
         "@kite9/fdc3": "^2.2.0-beta.25",
-        "@morgan-stanley/fdc3-web": "^0.1.4",
-        "@morgan-stanley/fdc3-web-messaging-provider": "^0.1.0",
-        "@morgan-stanley/fdc3-web-ui-provider": "^0.1.0",
+        "@morgan-stanley/fdc3-web": "^0.2.0",
+        "@morgan-stanley/fdc3-web-messaging-provider": "^0.2.0",
+        "@morgan-stanley/fdc3-web-ui-provider": "^0.2.0",
         "cors": "^2.8.5"
     },
     "nx": {}
