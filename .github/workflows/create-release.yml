@@ -7,6 +7,11 @@ jobs:
   build:
     name: Create Release
     runs-on: ubuntu-latest
+
+    env:
+        NODE_VERSION: '22'
+        NODE_OPTIONS:  "--max_old_space_size=4096"
+  
     permissions:
       id-token: write
       
