@@ -16,8 +16,8 @@ import type {
     DisplayMetadata,
     Listener,
     PrivateChannel,
-} from '@kite9/fdc3';
-import { ChannelError } from '@kite9/fdc3';
+} from '@finos/fdc3';
+import { ChannelError } from '@finos/fdc3';
 import {
     IMocked,
     Mock,

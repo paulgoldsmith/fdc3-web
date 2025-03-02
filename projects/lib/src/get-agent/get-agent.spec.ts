@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { DesktopAgent, GetAgentParams } from '@kite9/fdc3';
+import { DesktopAgent, GetAgentParams } from '@finos/fdc3';
 import { Mock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { getAgent, resetCachedPromise } from './get-agent';
 

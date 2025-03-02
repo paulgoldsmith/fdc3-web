@@ -11,7 +11,7 @@
 /* istanbul ignore file */
 // we hope these functions will get added to @finos/fdc3 so we can remove these implementations
 
-import type { BrowserTypes, PrivateChannel, PrivateChannelEventTypes } from '@kite9/fdc3';
+import type { BrowserTypes, PrivateChannel, PrivateChannelEventTypes } from '@finos/fdc3';
 
 /* istanbul ignore next */
 export function isRequestMessageType(value: any): boolean {

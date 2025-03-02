@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { type AppIdentifier, type AppIntent, type Contact, type Context, type Intent, ResolveError } from '@kite9/fdc3';
+import { type AppIdentifier, type AppIntent, type Contact, type Context, type Intent, ResolveError } from '@finos/fdc3';
 import { IMocked, Mock, proxyJestModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { AppDirectoryApplication, AppDirectoryApplicationType, WebAppDetails } from '../app-directory.contracts';
 import {

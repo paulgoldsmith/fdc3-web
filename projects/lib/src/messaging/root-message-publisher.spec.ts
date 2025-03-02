@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { BrowserTypes } from '@kite9/fdc3';
+import { BrowserTypes } from '@finos/fdc3';
 import {
     IMocked,
     Mock,

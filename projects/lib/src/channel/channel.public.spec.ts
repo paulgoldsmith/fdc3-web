@@ -8,8 +8,8 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { BrowserTypes, Channel, Contact, Context, ContextHandler, Listener } from '@kite9/fdc3';
-import { ChannelError } from '@kite9/fdc3';
+import type { BrowserTypes, Channel, Contact, Context, ContextHandler, Listener } from '@finos/fdc3';
+import { ChannelError } from '@finos/fdc3';
 import { IMocked, Mock, proxyJestModule, registerMock, setupFunction, toBe } from '@morgan-stanley/ts-mocking-bird';
 import {
     EventMessage,

@@ -18,7 +18,7 @@ import {
     type Listener,
     OpenError,
     ResolveError,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import {
     IMocked,
     Mock,
@@ -1085,7 +1085,7 @@ describe(`${DesktopAgentImpl.name} (desktop-agent)`, () => {
 
                 await postRequestMessage(getInfoMessage, source);
 
-                const version = dependencies['@kite9/fdc3'];
+                const version = dependencies['@finos/fdc3'];
                 const expectedVersion = (
                     version.indexOf('^') !== -1
                         ? version.slice(version.indexOf('^') + 1)
@@ -2163,7 +2163,7 @@ describe(`${DesktopAgentImpl.name} (desktop-agent)`, () => {
                     },
                     payload: {
                         privateChannelId: mockedChannelId,
-                        listenerType: 'onDisconnect',
+                        listenerType: 'disconnect',
                     },
                     type: 'privateChannelAddEventListenerRequest',
                 };

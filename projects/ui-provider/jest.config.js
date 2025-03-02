@@ -15,7 +15,7 @@ module.exports = {
     ...baseConfig,
     coverageThreshold,
     testEnvironment: 'jsdom',
-    transformIgnorePatterns: ['node_modules/(?!lit-element|lit-html|lit|@lit/|@kite9)'],
+    transformIgnorePatterns: ['node_modules/(?!lit-element|lit-html|lit|@lit/|@finos)'],
     collectCoverageFrom: ['./src/**/*.ts'],
     setupFilesAfterEnv: ['../test.ts'],
     coverageDirectory: path.join('../../build', 'coverage-results', 'ui-provider'),

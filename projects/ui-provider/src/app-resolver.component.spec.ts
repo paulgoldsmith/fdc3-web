@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { AppIdentifier, AppIntent, Context, DesktopAgent, IntentMetadata, ResolveError } from '@kite9/fdc3';
+import { AppIdentifier, AppIntent, Context, DesktopAgent, IntentMetadata, ResolveError } from '@finos/fdc3';
 import { IMocked, Mock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { AppResolverComponent } from './app-resolver.component';
 

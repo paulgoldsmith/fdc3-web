@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { type Channel, type DesktopAgent } from '@kite9/fdc3';
+import { type Channel, type DesktopAgent } from '@finos/fdc3';
 import { css, html, LitElement, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ClassInfo, classMap } from 'lit/directives/class-map.js';

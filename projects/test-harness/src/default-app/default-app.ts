@@ -21,7 +21,7 @@ import type {
     IntentResult,
     PrivateChannel as FDC3PrivateChannel,
     PrivateChannelEventTypes,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import {
     AppDirectoryApplication,
     createLogger,
