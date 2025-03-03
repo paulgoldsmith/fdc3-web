@@ -3,7 +3,6 @@ name: Create Release
 on:
   release:
     types: [ published ]
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
