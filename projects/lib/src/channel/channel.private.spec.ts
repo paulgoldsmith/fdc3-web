@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { BrowserTypes, EventHandler, Listener, PrivateChannel as FDC3PrivateChannel } from '@kite9/fdc3';
+import type { BrowserTypes, EventHandler, Listener, PrivateChannel as FDC3PrivateChannel } from '@finos/fdc3';
 import { IMocked, Mock, proxyJestModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import {
     EventMessage,
@@ -312,7 +312,7 @@ describe(`${PrivateChannel.name} (channel.private)`, () => {
             const expectedMessage: BrowserTypes.PrivateChannelAddEventListenerRequest = {
                 meta: createExpectedRequestMeta(),
                 payload: {
-                    listenerType: 'onDisconnect',
+                    listenerType: 'disconnect',
                     privateChannelId: instance.id,
                 },
                 type: 'privateChannelAddEventListenerRequest',

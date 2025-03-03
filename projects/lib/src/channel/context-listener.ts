@@ -16,7 +16,7 @@ import type {
     ContextMetadata,
     ContextType,
     Listener,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import { FullyQualifiedAppIdentifier, IProxyMessagingProvider } from '../contracts';
 import {
     createRequestMessage,

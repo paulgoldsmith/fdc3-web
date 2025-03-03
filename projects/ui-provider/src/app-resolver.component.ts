@@ -8,8 +8,8 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { AppMetadata, Context, DesktopAgent, Icon, Intent } from '@kite9/fdc3';
-import { OpenError, ResolveError } from '@kite9/fdc3';
+import type { AppMetadata, Context, DesktopAgent, Icon, Intent } from '@finos/fdc3';
+import { OpenError, ResolveError } from '@finos/fdc3';
 import {
     FullyQualifiedAppIdentifier,
     IAppResolver,

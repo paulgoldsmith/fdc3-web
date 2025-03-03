@@ -8,8 +8,8 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { AppIdentifier, AppIntent, DesktopAgent, Intent } from '@kite9/fdc3';
-import { ResolveError } from '@kite9/fdc3';
+import type { AppIdentifier, AppIntent, DesktopAgent, Intent } from '@finos/fdc3';
+import { ResolveError } from '@finos/fdc3';
 import { IMocked, Mock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { ResolveForContextPayload, ResolveForIntentPayload } from '../contracts';
 import { DefaultResolver } from './app-resolver.default';

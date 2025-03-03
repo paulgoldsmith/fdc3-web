@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { BrowserTypes, ChannelError, Contact, Context, EventHandler, Listener, PrivateChannel } from '@kite9/fdc3';
+import { BrowserTypes, ChannelError, Contact, Context, EventHandler, Listener, PrivateChannel } from '@finos/fdc3';
 import {
     IMocked,
     Mock,
@@ -550,7 +550,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                     source,
                 },
                 payload: {
-                    listenerType: 'onDisconnect',
+                    listenerType: 'disconnect',
                     privateChannelId: 'mocked-generated-Uuid',
                 },
                 type: 'privateChannelAddEventListenerRequest',
@@ -583,7 +583,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                     source: sourceTwo,
                 },
                 payload: {
-                    listenerType: 'onDisconnect',
+                    listenerType: 'disconnect',
                     privateChannelId: 'mocked-generated-Uuid',
                 },
                 type: 'privateChannelAddEventListenerRequest',
@@ -621,7 +621,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                     source,
                 },
                 payload: {
-                    listenerType: 'onDisconnect',
+                    listenerType: 'disconnect',
                     privateChannelId: mockedGeneratedUuid,
                 },
                 type: 'privateChannelAddEventListenerRequest',
@@ -686,7 +686,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                     source,
                 },
                 payload: {
-                    listenerType: 'onAddContextListener',
+                    listenerType: 'addContextListener',
                     privateChannelId: mockedGeneratedUuid,
                 },
                 type: 'privateChannelAddEventListenerRequest',
@@ -773,7 +773,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                     source,
                 },
                 payload: {
-                    listenerType: 'onDisconnect',
+                    listenerType: 'disconnect',
                     privateChannelId: 'mocked-generated-Uuid',
                 },
                 type: 'privateChannelAddEventListenerRequest',
@@ -1028,7 +1028,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
 
             mockCreatePrivateChannel(instance);
 
-            mockPrivateChannelAddEventListener('onAddContextListener', mockedGeneratedUuid, source, instance);
+            mockPrivateChannelAddEventListener('addContextListener', mockedGeneratedUuid, source, instance);
 
             const addContextListenerRequest: BrowserTypes.AddContextListenerRequest = {
                 meta: {
@@ -1179,7 +1179,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
 
             mockCreatePrivateChannel(instance);
 
-            mockPrivateChannelAddEventListener('onUnsubscribe', mockedGeneratedUuid, source, instance);
+            mockPrivateChannelAddEventListener('unsubscribe', mockedGeneratedUuid, source, instance);
 
             const addContextListenerRequest: BrowserTypes.AddContextListenerRequest = {
                 meta: {
@@ -1791,7 +1791,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
 
             mockAddContextListener(mockedGeneratedUuid, null, source, instance);
 
-            mockPrivateChannelAddEventListener('onUnsubscribe', mockedGeneratedUuid, source, instance);
+            mockPrivateChannelAddEventListener('unsubscribe', mockedGeneratedUuid, source, instance);
 
             const privateChannelDisconnectMessage: BrowserTypes.PrivateChannelDisconnectRequest = {
                 meta: {
@@ -1828,7 +1828,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
 
             instance.addToPrivateChannelAllowedList(mockedGeneratedUuid, sourceTwo);
 
-            mockPrivateChannelAddEventListener('onDisconnect', mockedGeneratedUuid, sourceTwo, instance);
+            mockPrivateChannelAddEventListener('disconnect', mockedGeneratedUuid, sourceTwo, instance);
 
             const privateChannelDisconnectMessage: BrowserTypes.PrivateChannelDisconnectRequest = {
                 meta: {
@@ -2022,7 +2022,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
     }
 
     function mockPrivateChannelAddEventListener(
-        listenerType: BrowserTypes.PrivateChannelEventListenerTypes,
+        listenerType: BrowserTypes.PrivateChannelEventType,
         privateChannelId: string,
         source: FullyQualifiedAppIdentifier,
         instance: ChannelMessageHandler,

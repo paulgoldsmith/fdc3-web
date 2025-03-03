@@ -8,7 +8,29 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { BrowserTypes } from '@kite9/fdc3';
+import { BrowserTypes } from '@finos/fdc3';
+
+const FDC3_VERSION = '2.2.0';
+function getTimestamp(): Date {
+    return new Date();
+}
+
+export function generateHandshakeResponseMessage(
+    message: BrowserTypes.WebConnectionProtocol1Hello,
+): BrowserTypes.WebConnectionProtocol3Handshake {
+    return {
+        type: 'WCP3Handshake',
+        meta: {
+            connectionAttemptUuid: message.meta.connectionAttemptUuid,
+            timestamp: getTimestamp(),
+        },
+        payload: {
+            channelSelectorUrl: false,
+            fdc3Version: FDC3_VERSION,
+            intentResolverUrl: false,
+        },
+    };
+}
 
 /**
  * Represents a relay for communication between this iframe, the parent window and the root window using the Broadcast Channel API.
@@ -101,13 +123,9 @@ export class IframeRelay {
             this.consoleRef.log(`Shutting down relay channel: ${this.channelId}`);
             const shutdownRelayChannel = new BroadcastChannel('fdc3-iframe-relay-shutdown-channel');
             shutdownRelayChannel.postMessage(this.channelId);
-        } else if (event.data.type === 'iframeHello') {
-            this.relayMessagePort?.postMessage(<BrowserTypes.IframeHandshake>{
-                type: 'iframeHandshake',
-                payload: {
-                    fdc3Version: '2.2',
-                },
-            });
+        } else if (event.data.type === 'WCP1Hello') {
+            const handshakeResponseMessage = generateHandshakeResponseMessage(event.data);
+            this.relayMessagePort?.postMessage(handshakeResponseMessage);
         } else {
             if (this.traceMessagingComms) {
                 this.consoleRef.log(`[MESSAGE] parent > relay: ${JSON.stringify(event.data, null, 2)}`);

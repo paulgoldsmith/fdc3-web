@@ -16,7 +16,7 @@ import {
     type Intent,
     OpenError,
     ResolveError,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import { AppDirectoryApplication } from '../app-directory.contracts';
 import {
     FullyQualifiedAppId,

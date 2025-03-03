@@ -18,7 +18,7 @@ import type {
     FDC3EventTypes,
     Intent,
     PrivateChannelEvent,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import { AppDirectoryApplication } from './app-directory.contracts';
 
 export type RequestMessage =

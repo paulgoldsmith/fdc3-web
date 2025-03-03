@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { AppMetadata, BrowserTypes, ImplementationMetadata } from '@kite9/fdc3';
+import { AppMetadata, BrowserTypes, ImplementationMetadata } from '@finos/fdc3';
 import { AppDirectoryApplication } from '../app-directory.contracts';
 import { FDC3_PROVIDER, FDC3_VERSION } from '../constants';
 import { FullyQualifiedAppIdentifier } from '../contracts';

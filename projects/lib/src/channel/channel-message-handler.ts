@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { BrowserTypes, ChannelError, Context, PrivateChannelEventTypes } from '@kite9/fdc3';
+import { BrowserTypes, ChannelError, Context, PrivateChannelEventTypes } from '@finos/fdc3';
 import { EventListenerLookup, FullyQualifiedAppIdentifier } from '../contracts';
 import { IRootPublisher } from '../contracts.internal';
 import {
@@ -239,7 +239,10 @@ export class ChannelMessageHandler {
             return;
         }
 
-        const eventType = convertToPrivateChannelEventTypes(requestMessage.payload.listenerType);
+        const eventType =
+            requestMessage.payload.listenerType === null
+                ? 'allEvents'
+                : convertToPrivateChannelEventTypes(requestMessage.payload.listenerType);
         const listeners =
             this.privateChannelEventListeners[eventType] ?? (this.privateChannelEventListeners[eventType] = []);
 
