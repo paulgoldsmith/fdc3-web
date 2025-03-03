@@ -1,7 +1,7 @@
 {
     "name": "@morgan-stanley/fdc3-web-test-harness",
     "main": "index.html",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
@@ -52,9 +52,9 @@
     },
     "dependencies": {
         "@finos/fdc3": "^2.2.0-alpha.3",
-        "@morgan-stanley/fdc3-web": "^0.2.0",
-        "@morgan-stanley/fdc3-web-messaging-provider": "^0.2.0",
-        "@morgan-stanley/fdc3-web-ui-provider": "^0.2.0",
+        "@morgan-stanley/fdc3-web": "^0.2.1",
+        "@morgan-stanley/fdc3-web-messaging-provider": "^0.2.1",
+        "@morgan-stanley/fdc3-web-ui-provider": "^0.2.1",
         "cors": "^2.8.5"
     },
     "nx": {}

@@ -2,7 +2,7 @@
     "name": "@morgan-stanley/fdc3-web-messaging-provider",
     "main": "index.js",
     "types": "index.d.ts",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
@@ -62,7 +62,7 @@
         "webpack-cli": "^5.1.4"
     },
     "peerDependencies": {
-        "@morgan-stanley/fdc3-web": "^0.1.4"
+        "@morgan-stanley/fdc3-web": "^0.2.1"
     },
     "nx": {
         "targets": {
