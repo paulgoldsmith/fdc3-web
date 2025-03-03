@@ -3,7 +3,7 @@
     "type": "commonjs",
     "main": "index.js",
     "types": "index.d.ts",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
@@ -55,7 +55,7 @@
         "typescript": "~5.6.2"
     },
     "peerDependencies": {
-        "@morgan-stanley/fdc3-web": "^0.1.4"
+        "@morgan-stanley/fdc3-web": "^0.2.1"
     },
     "dependencies": {
         "@finos/fdc3": "^2.2.0-alpha.3",
