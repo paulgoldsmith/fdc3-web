@@ -9,7 +9,7 @@
  * and limitations under the License. */
 
 /* eslint @typescript-eslint/no-var-requires: "off" */
-import type { BrowserTypes } from '@kite9/fdc3';
+import type { BrowserTypes } from '@finos/fdc3';
 import { IProxyOutgoingMessageEnvelope } from '@morgan-stanley/fdc3-web';
 import * as fdc3lib from '@morgan-stanley/fdc3-web';
 import { Mock, registerMock, reset, setupFunction } from '@morgan-stanley/ts-mocking-bird';
@@ -158,15 +158,24 @@ describe('IframeMessagingProvider', () => {
         // Mock the behavior of the iframe loading and the handshake
         mockIframeLoadedListener();
         mockedMessageChannel.port1.onmessage?.({
-            data: <BrowserTypes.IframeHandshake>{ type: 'iframeHandshake', payload: { fdc3Version: '2.2' } },
+            data: <BrowserTypes.WebConnectionProtocol3Handshake>{
+                type: 'WCP3Handshake',
+                payload: { fdc3Version: '2.2.0' },
+            },
         } as any as MessageEvent);
         await relayInitialized;
 
         // Assert
         expect(mockedMessageChannel.port1.postMessage).toHaveBeenCalledWith({
-            type: 'iframeHello',
+            type: 'WCP1Hello',
+            meta: {
+                connectionAttemptUuid: expect.any(String),
+                timestamp: expect.any(Date),
+            },
             payload: {
-                implementationDetails: 'iframe-relay',
+                actualUrl: 'http://localhost/',
+                fdc3Version: '2.2.0',
+                identityUrl: 'http://localhost/',
             },
         });
     });
@@ -192,15 +201,24 @@ describe('IframeMessagingProvider', () => {
         // Mock the behavior of the iframe loading and the handshake
         mockIframeLoadedListener();
         mockedMessageChannel.port1.onmessage?.({
-            data: <BrowserTypes.IframeHandshake>{ type: 'iframeHandshake', payload: { fdc3Version: '2.2' } },
+            data: <BrowserTypes.WebConnectionProtocol3Handshake>{
+                type: 'WCP3Handshake',
+                payload: { fdc3Version: '2.2.0' },
+            },
         } as any as MessageEvent);
         await relayInitialized;
 
         // Assert
         expect(mockedMessageChannel.port1.postMessage).toHaveBeenCalledWith({
-            type: 'iframeHello',
+            type: 'WCP1Hello',
+            meta: {
+                connectionAttemptUuid: expect.any(String),
+                timestamp: expect.any(Date),
+            },
             payload: {
-                implementationDetails: 'iframe-relay',
+                actualUrl: 'http://localhost/',
+                fdc3Version: '2.2.0',
+                identityUrl: 'http://localhost/',
             },
         });
     });
@@ -252,7 +270,10 @@ describe('IframeMessagingProvider', () => {
             const relayInitialized = iframeMessagingProvider.initializeRelay();
             mockIframeLoadedListener();
             mockedMessageChannel.port1.onmessage?.({
-                data: <BrowserTypes.IframeHandshake>{ type: 'iframeHandshake', payload: { fdc3Version: '2.2' } },
+                data: <BrowserTypes.WebConnectionProtocol3Handshake>{
+                    type: 'WCP3Handshake',
+                    payload: { fdc3Version: '2.2.0' },
+                },
             } as any as MessageEvent);
             await relayInitialized;
         });
@@ -325,7 +346,7 @@ describe('IframeMessagingProvider', () => {
 
             // Assert
             expect(mockedConsole.log).toHaveBeenCalledWith(
-                'Relay connected to iframe with implementation details: 2.2',
+                'Relay connected to iframe with implementation details: 2.2.0',
             );
             expect(source.postMessage).toHaveBeenCalledWith(
                 {

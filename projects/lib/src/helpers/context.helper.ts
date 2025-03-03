@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { ContextHandler, ContextType } from '@kite9/fdc3';
+import type { ContextHandler, ContextType } from '@finos/fdc3';
 
 /**
  * Converts implementation addContextListener parameters to those required by fdc3 addContextListener method

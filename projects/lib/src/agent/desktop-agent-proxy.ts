@@ -28,7 +28,7 @@ import {
     IntentResult,
     Listener,
     PrivateChannel,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import { ChannelFactory, Channels } from '../channel';
 import { FullyQualifiedAppIdentifier, IProxyMessagingProvider } from '../contracts';
 import {

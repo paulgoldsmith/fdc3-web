@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { BrowserTypes, DesktopAgent, OpenError } from '@kite9/fdc3';
+import { BrowserTypes, DesktopAgent, OpenError } from '@finos/fdc3';
 import {
     any,
     IMocked,

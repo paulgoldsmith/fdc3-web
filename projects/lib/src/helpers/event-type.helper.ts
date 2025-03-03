@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { BrowserTypes, FDC3EventTypes, PrivateChannelEventTypes } from '@kite9/fdc3';
+import type { BrowserTypes, FDC3EventTypes, PrivateChannelEventTypes } from '@finos/fdc3';
 import { EventListenerKey } from '../contracts';
 
 type PrivateChannelEventMessageTypes = Extract<
@@ -31,17 +31,17 @@ export function convertToEventListenerIndex(type: 'USER_CHANNEL_CHANGED' | null)
 }
 
 export function convertToPrivateChannelEventTypes(
-    type: BrowserTypes.PrivateChannelEventListenerTypes | PrivateChannelEventMessageTypes,
+    type: BrowserTypes.PrivateChannelEventType | PrivateChannelEventMessageTypes,
 ): PrivateChannelEventTypes {
     switch (type) {
         case 'privateChannelOnAddContextListenerEvent':
-        case 'onAddContextListener':
+        case 'addContextListener':
             return 'addContextListener';
         case 'privateChannelOnDisconnectEvent':
-        case 'onDisconnect':
+        case 'disconnect':
             return 'disconnect';
         case 'privateChannelOnUnsubscribeEvent':
-        case 'onUnsubscribe':
+        case 'unsubscribe':
             return 'unsubscribe';
     }
 }
@@ -61,13 +61,13 @@ export function convertToPrivateChannelEventMessageTypes(
 
 export function convertToPrivateChannelEventListenerTypes(
     type: PrivateChannelEventTypes,
-): BrowserTypes.PrivateChannelEventListenerTypes {
+): BrowserTypes.PrivateChannelEventType {
     switch (type) {
         case 'addContextListener':
-            return 'onAddContextListener';
+            return 'addContextListener';
         case 'disconnect':
-            return 'onDisconnect';
+            return 'disconnect';
         case 'unsubscribe':
-            return 'onUnsubscribe';
+            return 'unsubscribe';
     }
 }

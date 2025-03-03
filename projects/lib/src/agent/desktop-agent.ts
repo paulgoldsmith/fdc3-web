@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { BrowserTypes, DesktopAgent, ImplementationMetadata, Intent, OpenError, ResolveError } from '@kite9/fdc3';
+import { BrowserTypes, DesktopAgent, ImplementationMetadata, Intent, OpenError, ResolveError } from '@finos/fdc3';
 import { AppDirectory } from '../app-directory';
 import { AppDirectoryApplication } from '../app-directory.contracts';
 import { ChannelFactory } from '../channel';

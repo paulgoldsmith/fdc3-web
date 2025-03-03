@@ -4,7 +4,7 @@
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
-        "clean": "nx run-many -t clean --excludeTaskDependencies && rimraf build ../packages ../install",
+        "clean": "nx run-many -t clean --excludeTaskDependencies && rimraf build tmp",
         "lint-fix": "nx run-many -t lint-fix --excludeTaskDependencies",
         "lint": "nx run-many -t lint --excludeTaskDependencies",
         "build": "nx run-many -t build",

@@ -11,7 +11,7 @@
 import './root-app.scss';
 import './settings-panel';
 import './app-container';
-import { AppIdentifier, Channel, Context, OpenError } from '@kite9/fdc3';
+import { AppIdentifier, Channel, Context, OpenError } from '@finos/fdc3';
 import {
     AppDirectoryApplication,
     createLogger,

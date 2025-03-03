@@ -72,15 +72,27 @@ describe('IframeRelay', () => {
         } as any as MessageEvent);
         mockedMessagePort.onmessage?.({
             data: {
-                type: 'iframeHello',
+                type: 'WCP1Hello',
+                meta: {
+                    connectionAttemptUuid: 'mocked-uuid',
+                },
+                payload: {
+                    fdc3Version: '2.2.0',
+                },
             },
         } as any as MessageEvent);
 
         // Assert
         expect(mockedMessagePort.postMessage).toHaveBeenCalledWith({
-            type: 'iframeHandshake',
+            type: 'WCP3Handshake',
+            meta: {
+                connectionAttemptUuid: 'mocked-uuid',
+                timestamp: expect.any(Date),
+            },
             payload: {
-                fdc3Version: '2.2',
+                channelSelectorUrl: false,
+                intentResolverUrl: false,
+                fdc3Version: '2.2.0',
             },
         });
         expect(mockedMessagePort.onmessage).toBeDefined();

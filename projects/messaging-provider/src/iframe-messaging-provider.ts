@@ -8,9 +8,10 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { BrowserTypes } from '@kite9/fdc3';
+import type { BrowserTypes } from '@finos/fdc3';
 import {
     discoverProxyCandidates,
+    generateHelloMessage,
     generateUUID,
     IProxyIncomingMessageEnvelope,
     IProxyMessagingProvider,
@@ -158,12 +159,8 @@ export class IframeMessagingProvider implements IProxyMessagingProvider {
         this.messageChannel.port1.onmessage = (...args) => {
             this.onMessage.call(this, ...args, resolve);
         };
-        this.messageChannel.port1.postMessage(<BrowserTypes.IframeHello>{
-            type: 'iframeHello',
-            payload: {
-                implementationDetails: 'iframe-relay',
-            },
-        });
+        const helloMessage = generateHelloMessage();
+        this.messageChannel.port1.postMessage(helloMessage);
 
         this.firstLoadIframe = false;
     }
@@ -172,11 +169,11 @@ export class IframeMessagingProvider implements IProxyMessagingProvider {
      * Handles messages received from the iframe channel adapter.
      */
     private onMessage(event: MessageEvent, resolve: (value: void | PromiseLike<void>) => void): void {
-        if (event.data.type === 'iframeHandshake') {
+        if (event.data.type === 'WCP3Handshake') {
             this.relayInitializeTimeout && clearTimeout(this.relayInitializeTimeout);
             this.relayConnected = true;
             this.consoleRef.log(
-                `Relay connected to iframe with implementation details: ${(<BrowserTypes.IframeHandshake>event.data).payload.fdc3Version}`,
+                `Relay connected to iframe with implementation details: ${(<BrowserTypes.WebConnectionProtocol3Handshake>event.data).payload.fdc3Version}`,
             );
             resolve();
         } else {

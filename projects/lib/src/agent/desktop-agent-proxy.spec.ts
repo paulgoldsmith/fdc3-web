@@ -24,8 +24,8 @@ import type {
     IntentResult,
     Listener,
     PrivateChannel,
-} from '@kite9/fdc3';
-import { OpenError, ResolveError } from '@kite9/fdc3';
+} from '@finos/fdc3';
+import { OpenError, ResolveError } from '@finos/fdc3';
 import {
     IMocked,
     Mock,

@@ -17,7 +17,7 @@ import type {
     DesktopAgent,
     Listener,
     PrivateChannel as FDC3PrivateChannel,
-} from '@kite9/fdc3';
+} from '@finos/fdc3';
 import { FullyQualifiedAppIdentifier, IProxyMessagingProvider } from '../contracts';
 import {
     createRequestMessage,

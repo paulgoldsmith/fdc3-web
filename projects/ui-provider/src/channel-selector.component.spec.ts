@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { Channel, DesktopAgent, EventHandler, FDC3ChannelChangedEvent, Listener } from '@kite9/fdc3';
+import { Channel, DesktopAgent, EventHandler, FDC3ChannelChangedEvent, Listener } from '@finos/fdc3';
 import { IMocked, Mock, setupFunction, setupProperty } from '@morgan-stanley/ts-mocking-bird';
 import { ChannelSelectorComponent } from './channel-selector.component';
 

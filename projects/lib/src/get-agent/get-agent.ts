@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { AgentError, BrowserTypes, DesktopAgent, GetAgentParams, GetAgentType } from '@kite9/fdc3';
+import { AgentError, BrowserTypes, DesktopAgent, GetAgentParams, GetAgentType } from '@finos/fdc3';
 import { DesktopAgentFactory } from '../agent';
 import { DEFAULT_AGENT_DISCOVERY_TIMEOUT, FDC3_READY_EVENT } from '../constants';
 import { IProxyMessagingProvider } from '../contracts';
@@ -84,7 +84,7 @@ const getAgentImpl: GetAgentType = async (params?: GetAgentParams): Promise<Desk
     log(`getAgent called with params:`, 'debug', params);
 
     const existingAgent = await Promise.race([
-        waitForPreloadAgent(params?.timeout),
+        waitForPreloadAgent(params?.timeoutMs),
         waitForProxyAgent(params?.identityUrl),
     ]);
 

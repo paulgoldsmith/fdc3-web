@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import type { AppIdentifier } from '@kite9/fdc3';
+import type { AppIdentifier } from '@finos/fdc3';
 import { appInstanceEquals, resolveAppIdentifier } from './app-identity.helper';
 
 describe(`app-identity.helper`, () => {
