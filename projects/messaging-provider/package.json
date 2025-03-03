@@ -20,6 +20,10 @@
         "prebuild-release": "npm run clean",
         "build-release": "npm run build && npm run lint && npm run test"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/morganstanley/fdc3-web.git"
+    },
     "devDependencies": {
         "@babel/preset-env": "^7.25.4",
         "@babel/preset-typescript": "^7.24.7",

@@ -17,6 +17,10 @@
         "lint-fix": "eslint -c ../../.eslintrc.js --ext .ts,.js . --fix",
         "generate-docs": "typedoc src/index.ts --out ./dist/docs --options ../../typedoc.config.json"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/morganstanley/fdc3-web.git"
+    },
     "devDependencies": {
         "@babel/preset-env": "^7.25.4",
         "@babel/preset-typescript": "^7.24.7",

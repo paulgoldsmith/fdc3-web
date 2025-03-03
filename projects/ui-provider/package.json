@@ -18,6 +18,10 @@
         "lint": "cross-env BUILD_TYPE=release eslint -c ../../.eslintrc.js --ext .ts,.js .",
         "lint-fix": "eslint -c ../../.eslintrc.js --ext .ts,.js . --fix"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/morganstanley/fdc3-web.git"
+    },
     "devDependencies": {
         "@babel/plugin-proposal-decorators": "^7.24.7",
         "@babel/preset-env": "^7.25.4",
