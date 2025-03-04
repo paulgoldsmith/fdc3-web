@@ -26,6 +26,14 @@
         }
     },
     "defaultBase": "main",
+    "release": {
+        "version": {
+            "generatorOptions": {
+                "packageRoot": "projects/{projectName}/dist/",
+                "currentVersionResolver": "git-tag"
+            }
+        }
+    },
     "plugins": [
         {
             "plugin": "@nx/eslint/plugin",

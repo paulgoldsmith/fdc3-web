@@ -1,6 +1,6 @@
 {
     "name": "@morgan-stanley/fdc3-web-monorepo",
-    "version": "0.2.1",
+    "version": "1.0.0",
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
@@ -13,7 +13,8 @@
         "generate-docs": "nx run-many -t generate-docs",
         "prebuild-release": "npm run clean",
         "build-release": "npm run lint -- --skip-nx-cache && npm run build -- --skip-nx-cache && npm run test -- --skip-nx-cache ",
-        "postbuild-release": "npm run generate-docs"
+        "postbuild-release": "npm run generate-docs",
+        "release": "nx release"
     },
     "workspaces": [
         "projects/*"
