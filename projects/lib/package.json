@@ -24,6 +24,7 @@
     "devDependencies": {
         "@babel/preset-env": "^7.25.4",
         "@babel/preset-typescript": "^7.24.7",
+        "@finos/fdc3": "^2.2.0-alpha.3",
         "@morgan-stanley/ts-mocking-bird": "^1.2.0",
         "@types/eslint": "^8.56.10",
         "@types/eslint-scope": "^3.7.7",
@@ -54,37 +55,10 @@
         "typedoc": "^0.26.8",
         "typescript": "~5.6.2"
     },
-    "nx": {
-        "targets": {
-            "build": {
-                "executor": "@nx/js:tsc",
-                "options": {
-                    "outputPath": "{projectRoot}/dist/",
-                    "rootDir": "{projectRoot}/src",
-                    "main": "index.ts",
-                    "tsConfig": "{projectRoot}/tsconfig.json",
-                    "assets": [
-                        {
-                            "input": "{workspaceRoot}",
-                            "glob": ".npmignore",
-                            "output": "./"
-                        },
-                        {
-                            "input": "{projectRoot}",
-                            "glob": "package.json",
-                            "output": "./"
-                        },
-                        {
-                            "input": "{projectRoot}",
-                            "glob": "README.md",
-                            "output": "./"
-                        }
-                    ]
-                }
-            }
-        }
+    "peerDependencies": {
+        "@morgan-stanley/fdc3-web": ">=0.2.1 <= 1.0.0",
+        "@finos/fdc3": "^2.2.0-alpha.3"
     },
     "dependencies": {
-        "@finos/fdc3": "^2.2.0-alpha.3"
     }
 }
