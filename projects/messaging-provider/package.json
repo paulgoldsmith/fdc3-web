@@ -2,7 +2,7 @@
     "name": "@morgan-stanley/fdc3-web-messaging-provider",
     "main": "index.js",
     "types": "index.d.ts",
-    "version": "0.2.0",
+    "version": "0.2.2",
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
@@ -27,7 +27,6 @@
     "devDependencies": {
         "@babel/preset-env": "^7.25.4",
         "@babel/preset-typescript": "^7.24.7",
-        "@morgan-stanley/fdc3-web": "^0.2.0",
         "@morgan-stanley/ts-mocking-bird": "^1.2.0",
         "@types/eslint": "^8.56.10",
         "@types/eslint-scope": "^3.7.7",
@@ -62,47 +61,7 @@
         "webpack-cli": "^5.1.4"
     },
     "peerDependencies": {
-        "@morgan-stanley/fdc3-web": "^0.1.4"
-    },
-    "nx": {
-        "targets": {
-            "build:relay": {
-                "executor": "@nx/webpack:webpack",
-                "options": {
-                    "webpackConfig": "{projectRoot}/webpack.config.js",
-                    "outputPath": "{projectRoot}/dist/",
-                    "rootDir": "{projectRoot}"
-                }
-            },
-            "build:library": {
-                "executor": "@nx/js:tsc",
-                "options": {
-                    "outputPath": "{projectRoot}/dist/",
-                    "rootDir": "{projectRoot}/src",
-                    "main": "{projectRoot}/dist/index.ts",
-                    "tsConfig": "{projectRoot}/tsconfig.json",
-                    "assets": [
-                        {
-                            "input": "{workspaceRoot}",
-                            "glob": ".npmignore",
-                            "output": "./"
-                        },
-                        {
-                            "input": "{projectRoot}",
-                            "glob": "package.json",
-                            "output": "./"
-                        },
-                        {
-                            "input": "{projectRoot}",
-                            "glob": "README.md",
-                            "output": "./"
-                        }
-                    ]
-                }
-            }
-        }
-    },
-    "dependencies": {
+        "@morgan-stanley/fdc3-web": ">=0.2.1 <= 1.0.0",
         "@finos/fdc3": "^2.2.0-alpha.3"
     }
 }

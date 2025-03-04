@@ -27,7 +27,7 @@ import {
     setupFunction,
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
-import { dependencies } from '../../package.json';
+import { peerDependencies } from '../../package.json';
 import { AppDirectory } from '../app-directory';
 import { AppDirectoryApplication } from '../app-directory.contracts';
 import { ChannelFactory, Channels } from '../channel';
@@ -1085,7 +1085,7 @@ describe(`${DesktopAgentImpl.name} (desktop-agent)`, () => {
 
                 await postRequestMessage(getInfoMessage, source);
 
-                const version = dependencies['@finos/fdc3'];
+                const version = peerDependencies['@finos/fdc3'];
                 const expectedVersion = (
                     version.indexOf('^') !== -1
                         ? version.slice(version.indexOf('^') + 1)
