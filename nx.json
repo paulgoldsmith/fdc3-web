@@ -29,7 +29,7 @@
     "release": {
         "version": {
             "generatorOptions": {
-                "packageRoot": "projects/{projectName}/dist/",
+                "packageRoot": "projects/{projectName}/",
                 "currentVersionResolver": "git-tag"
             }
         }
