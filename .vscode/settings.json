@@ -11,5 +11,11 @@
         "source.fixAll.eslint": "explicit"
     },
     "editor.formatOnSave": true,
-    "eslint.format.enable": true
+    "eslint.format.enable": true,
+    "terminal.integrated.env.windows": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+    },
+    "terminal.integrated.env.linux": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+    }
 }
