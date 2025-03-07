@@ -45,5 +45,7 @@ updates:
           - 'patch'
   - package-ecosystem: "github-actions"
     versioning-strategy: increase
+    directories:
+      - "/"
     schedule:
       interval: "monthly"
