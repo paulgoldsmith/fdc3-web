@@ -1,0 +1,49 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    versioning-strategy: increase
+    directories:
+      - "/"
+      - "projects/*"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
+    ignore:
+      - dependency-name: "fs-extra"
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      nx:
+        patterns:
+          - "nx"
+          - "@nx/*"
+      babel:
+        patterns:
+          - "@babel/*"
+      eslint:
+        patterns:
+          - "eslint"
+      jest:
+        patterns:
+          - "jest"
+      typescript:
+        patterns:
+          - "typescript"
+      minor_versions:
+        dependency-type: "production"
+        update-types:
+          - 'minor'
+          - 'patch'
+      development_dependencies:
+        dependency-type: "development"
+        update-types:
+          - 'minor'
+          - 'patch'
+  - package-ecosystem: "github-actions"
+    versioning-strategy: increase
+    schedule:
+      interval: "weekly"
