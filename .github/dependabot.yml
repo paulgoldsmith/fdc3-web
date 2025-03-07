@@ -33,6 +33,15 @@ updates:
       typescript:
         patterns:
           - "typescript"
+      types:
+        patterns:
+          - "@types/*"
+      typescript-eslint:
+        patterns:
+          - "typescript-eslint"
+      finos-fdc3:
+        patterns:
+          - "@finos/fdc3"
       minor_versions:
         dependency-type: "production"
         update-types:
