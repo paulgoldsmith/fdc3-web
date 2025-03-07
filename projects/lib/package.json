@@ -22,8 +22,8 @@
         "url": "https://github.com/morganstanley/fdc3-web"
     },
     "devDependencies": {
-        "@babel/preset-env": "^7.25.4",
-        "@babel/preset-typescript": "^7.24.7",
+        "@babel/preset-env": "^7.26.9",
+        "@babel/preset-typescript": "^7.26.0",
         "@finos/fdc3": "^2.2.0-alpha.3",
         "@morgan-stanley/ts-mocking-bird": "^1.2.0",
         "@types/eslint": "^8.56.10",
