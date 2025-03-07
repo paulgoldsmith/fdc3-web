@@ -6,7 +6,7 @@ updates:
       - "/"
       - "projects/*"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
       - "dependencies"
     open-pull-requests-limit: 10
@@ -46,4 +46,4 @@ updates:
   - package-ecosystem: "github-actions"
     versioning-strategy: increase
     schedule:
-      interval: "weekly"
+      interval: "monthly"
