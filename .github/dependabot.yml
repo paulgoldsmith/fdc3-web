@@ -27,21 +27,37 @@ updates:
       eslint:
         patterns:
           - "eslint"
+          - "eslint-*"
+          - "prettier"
+      ts-mocking-bird:
+        patterns:
+          - "@morgan-stanley/ts-mocking-bird"
       jest:
         patterns:
           - "jest"
+          - "jest-*"
       typescript:
         patterns:
           - "typescript"
+          - "tslib"
+          - "ts-jest"
+          - "ts-loader"
+          - "typedoc"
+      rxjs:
+        patterns:
+          - "rxjs"
       types:
         patterns:
           - "@types/*"
       typescript-eslint:
         patterns:
-          - "typescript-eslint"
+          - "@typescript-eslint/*"
       finos-fdc3:
         patterns:
           - "@finos/fdc3"
+      webpack:
+        patterns:
+          - "webpack"
       minor_versions:
         dependency-type: "production"
         update-types:
