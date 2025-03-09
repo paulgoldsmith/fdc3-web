@@ -2,7 +2,7 @@
     "name": "@morgan-stanley/fdc3-web-messaging-provider",
     "main": "index.js",
     "types": "index.d.ts",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "license": "Apache-2.0",
     "author": "Morgan Stanley",
     "scripts": {
