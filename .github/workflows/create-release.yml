@@ -1,4 +1,5 @@
 name: Create Release
+permissions: read-all
 
 on:
   release:
