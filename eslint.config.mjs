@@ -1,8 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import preferArrow from "eslint-plugin-prefer-arrow";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
-import prettier from "eslint-plugin-prettier";
+import "eslint-plugin-prettier";
 import licenseHeader from "eslint-plugin-license-header";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
@@ -33,7 +32,6 @@ const ignores = globalIgnores(
               '**/dist/**/*',
               '**/docs/**/*',
               '**/node_modules/**/*',
-              '**/*.cjs',
               ...(additionalIgnorePatterns != null ? additionalIgnorePatterns.split(',') : []),
           ]
     );
@@ -90,18 +88,17 @@ if (optInRules.indexOf(optInFunctionReturnType) >= 0) {
 export default defineConfig([
     ignores,
     {
-        extends: fixupConfigRules(compat.extends(
+        extends: compat.extends(
             "eslint:recommended",
             "plugin:@typescript-eslint/recommended",
             "plugin:prettier/recommended",
             "plugin:import/recommended",
             "plugin:import/typescript",
-        )),
+        ),
 
         plugins: {
             "prefer-arrow": preferArrow,
             "simple-import-sort": simpleImportSort,
-            prettier: fixupPluginRules(prettier),
             "license-header": licenseHeader,
         },
 
@@ -134,7 +131,7 @@ export default defineConfig([
             "@typescript-eslint/explicit-function-return-type": "off",
         },
     }, {
-        files: ["**/*.config.js", "**/*.config.ts"],
+        files: ["**/*.config.js", "**/*.config.ts", "**/*.cjs"],
 
         rules: {
             "license-header/header": "off",
