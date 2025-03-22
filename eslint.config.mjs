@@ -3,7 +3,7 @@ import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import preferArrow from "eslint-plugin-prefer-arrow";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import prettier from "eslint-plugin-prettier";
-import header from "eslint-plugin-header";
+import licenseHeader from "eslint-plugin-license-header";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
@@ -64,10 +64,10 @@ const rules = {
     ], // alphabetically sorts imports
     'import/no-duplicates': 'error', // removes duplicate imports
     'prettier/prettier': ['error', prettierConfig], // runs prettier
-    /* 'header/header': [
+    'license-header/header': [
         'error',
-        'block',
-        [` Morgan Stanley makes this available to you under the Apache License,
+        [
+`/* Morgan Stanley makes this available to you under the Apache License,
  * Version 2.0 (the "License"). You may obtain a copy of the License at
  *      http://www.apache.org/licenses/LICENSE-2.0.
  * See the NOTICE file distributed with this work for additional information
@@ -75,10 +75,8 @@ const rules = {
  * to in writing, software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions
- * and limitations under the License. `],
-        2,
+ * and limitations under the License. */`]
     ], // OSS license header
-    */
 };
 
 if (typeof process.env.BUILD_TYPE === 'string' && process.env.BUILD_TYPE.toLowerCase() === 'release') {
@@ -104,7 +102,7 @@ export default defineConfig([
             "prefer-arrow": preferArrow,
             "simple-import-sort": simpleImportSort,
             prettier: fixupPluginRules(prettier),
-            header: fixupPluginRules(header),
+            "license-header": licenseHeader,
         },
 
         languageOptions: {
@@ -139,7 +137,7 @@ export default defineConfig([
         files: ["**/*.config.js", "**/*.config.ts"],
 
         rules: {
-            "header/header": "off",
+            "license-header/header": "off",
             "@typescript-eslint/no-require-imports": "off",
         },
     }
