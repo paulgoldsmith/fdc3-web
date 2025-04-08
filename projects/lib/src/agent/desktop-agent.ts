@@ -13,6 +13,7 @@ import { AppDirectory } from '../app-directory';
 import { AppDirectoryApplication } from '../app-directory.contracts';
 import { ChannelFactory } from '../channel';
 import { ChannelMessageHandler } from '../channel/channel-message-handler';
+import { HEARTBEAT } from '../constants';
 import {
     AppIdentifierListenerPair,
     EventListenerKey,
@@ -74,6 +75,12 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
     private openStrategies: IOpenApplicationStrategy[];
     private rootMessagePublisher: IRootPublisher;
 
+    // Heartbeat tracking
+    private readonly heartbeatTimers: Map<FullyQualifiedAppIdentifier, NodeJS.Timeout> = new Map();
+    private readonly heartbeatRetries: Map<FullyQualifiedAppIdentifier, number> = new Map();
+    private readonly heartbeatTimeouts: Map<FullyQualifiedAppIdentifier, NodeJS.Timeout> = new Map();
+    private readonly connectedProxies: Set<FullyQualifiedAppIdentifier> = new Set();
+
     constructor(params: RootDesktopAgentParams) {
         super({
             appIdentifier: params.appIdentifier,
@@ -95,6 +102,9 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         requestMessage: RequestMessage,
         sourceApp: FullyQualifiedAppIdentifier,
     ): Promise<void> {
+        // Start heartbeat monitoring when we receive any message from a proxy
+        this.startHeartbeat(sourceApp);
+
         switch (requestMessage.type) {
             case 'addIntentListenerRequest':
                 return this.onAddIntentListenerRequest(requestMessage, sourceApp);
@@ -160,9 +170,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             case 'privateChannelDisconnectRequest':
                 return this.channelMessageHandler.onPrivateChannelDisconnectRequest(requestMessage, sourceApp);
             case 'heartbeatAcknowledgementRequest':
-                //TODO: implement desktop agent
-                console.error(`${requestMessage.type} handling is not currently implemented`);
-                break;
+                return this.onHeartbeatAcknowledgementRequest(requestMessage, sourceApp);
         }
     }
 
@@ -953,5 +961,148 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             }),
             [fullyQualifiedAppIdentifier],
         );
+    }
+
+    /**
+     * Handle heartbeat acknowledgment from a proxy agent
+     * @param requestMessage The heartbeat acknowledgment request
+     * @param sourceApp The proxy agent that sent the acknowledgment
+     */
+    private onHeartbeatAcknowledgementRequest(
+        _requestMessage: BrowserTypes.HeartbeatAcknowledgementRequest,
+        sourceApp: FullyQualifiedAppIdentifier,
+    ): void {
+        // Reset retry count when we receive an acknowledgment
+        this.heartbeatRetries.set(sourceApp, 0);
+
+        // Clear the timeout timer
+        const timeoutTimer = this.heartbeatTimeouts.get(sourceApp);
+        if (timeoutTimer) {
+            clearTimeout(timeoutTimer);
+            this.heartbeatTimeouts.delete(sourceApp);
+        }
+    }
+
+    /**
+     * Start heartbeat monitoring for a proxy
+     * @param appId The app ID of the proxy to monitor
+     */
+    private startHeartbeat(appId: FullyQualifiedAppIdentifier): void {
+        if (this.heartbeatTimers.has(appId)) {
+            return; // Already monitoring this proxy
+        }
+
+        this.connectedProxies.add(appId);
+        this.heartbeatRetries.set(appId, 0);
+
+        const timer = setInterval(() => {
+            void this.sendHeartbeat(appId);
+        }, HEARTBEAT.INTERVAL_MS);
+
+        this.heartbeatTimers.set(appId, timer);
+
+        // Send initial appId
+        void this.sendHeartbeat(appId);
+    }
+
+    /**
+     * Send a heartbeat to a proxy and wait for acknowledgment
+     * @param appId The app ID of the proxy to send heartbeat to
+     */
+    private async sendHeartbeat(appId: FullyQualifiedAppIdentifier): Promise<void> {
+        const retries = this.heartbeatRetries.get(appId) ?? 0;
+
+        if (retries >= HEARTBEAT.MAX_TRIES) {
+            this.handleProxyDisconnect(appId);
+            return;
+        }
+
+        try {
+            // Create a heartbeat event with proper structure
+            const heartbeatEvent = createEvent<BrowserTypes.HeartbeatEvent>('heartbeatEvent', {});
+
+            await this.rootMessagePublisher.publishEvent(heartbeatEvent, [appId]);
+
+            // Clear any existing timeout
+            const existingTimeout = this.heartbeatTimeouts.get(appId);
+            if (existingTimeout) {
+                clearTimeout(existingTimeout);
+            }
+
+            // Set new timeout for acknowledgment
+            const timeout = setTimeout(() => {
+                const currentRetries = this.heartbeatRetries.get(appId) ?? 0;
+                this.heartbeatRetries.set(appId, currentRetries + 1);
+                log(
+                    `Heartbeat acknowledgment timeout for proxy ${JSON.stringify(appId)}. ` +
+                        `Attempt ${currentRetries + 1}/${HEARTBEAT.MAX_TRIES}`,
+                );
+            }, HEARTBEAT.TIMEOUT_MS);
+
+            this.heartbeatTimeouts.set(appId, timeout);
+        } catch (error) {
+            log(`Failed to send heartbeat to proxy ${JSON.stringify(appId)}`);
+            this.handleProxyDisconnect(appId);
+        }
+    }
+
+    /**
+     * Handle a proxy disconnection by cleaning up resources
+     * @param appId The app ID of the disconnected proxy
+     */
+    private handleProxyDisconnect(appId: FullyQualifiedAppIdentifier): void {
+        log(`Proxy ${JSON.stringify(appId)} disconnected`);
+
+        // Clear timers
+        const heartbeatTimer = this.heartbeatTimers.get(appId);
+        if (heartbeatTimer) {
+            clearInterval(heartbeatTimer);
+        }
+
+        const timeoutTimer = this.heartbeatTimeouts.get(appId);
+        if (timeoutTimer) {
+            clearTimeout(timeoutTimer);
+        }
+
+        // Clean up tracking maps
+        this.heartbeatTimers.delete(appId);
+        this.heartbeatRetries.delete(appId);
+        this.heartbeatTimeouts.delete(appId);
+        this.connectedProxies.delete(appId);
+
+        // Clean up intent listeners
+        Object.entries(this.intentListeners).forEach(([intent, listeners]) => {
+            // Remove any listeners for this proxy
+            const remainingListeners = listeners?.filter(listener => !appInstanceEquals(listener.appIdentifier, appId));
+            if (remainingListeners?.length) {
+                this.intentListeners[intent as Intent] = remainingListeners;
+            } else {
+                delete this.intentListeners[intent as Intent];
+            }
+        });
+
+        // Clean up event listeners
+        Object.entries(this.eventListeners).forEach(([eventType, listeners]) => {
+            // Remove any listeners for this proxy
+            const remainingListeners = listeners.filter(listener => !appInstanceEquals(listener.appIdentifier, appId));
+            if (remainingListeners.length) {
+                this.eventListeners[eventType as EventListenerKey] = remainingListeners;
+            } else {
+                delete this.eventListeners[eventType as EventListenerKey];
+            }
+        });
+
+        // Clean up intent listener callbacks
+        const callbacksToRemove: string[] = [];
+        this.intentListenerCallbacks.forEach((_, key) => {
+            const decoded = decodeUUUrl(key);
+            if (decoded && decoded.uuid && appInstanceEquals(decoded.payload as FullyQualifiedAppIdentifier, appId)) {
+                callbacksToRemove.push(key);
+            }
+        });
+        callbacksToRemove.forEach(key => this.intentListenerCallbacks.delete(key));
+
+        // Clean up channel subscriptions
+        this.channelMessageHandler.cleanupDisconnectedProxy(appId);
     }
 }

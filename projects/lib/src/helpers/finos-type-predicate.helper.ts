@@ -255,6 +255,10 @@ export function isAddEventListenerRequest(value: any): value is BrowserTypes.Add
     return isAppRequestMessage(value) && value.type === 'addEventListenerRequest';
 }
 
+export function isHeartbeatEvent(value: any): value is BrowserTypes.HeartbeatEvent {
+    return isAppEventMessage(value) && value.type === 'heartbeatEvent';
+}
+
 /**
  * Response Messages
  */

@@ -206,7 +206,7 @@ export class ChannelMessageHandler {
 
     /**
      * Publishes a ChannelChangedEvent to the origin app
-     * @param newChannelId is the channelId of the user channel the user has joined or null if the user is now not joined to a user channe;
+     * @param newChannelId is the channelId of the user channel the user has joined or null if the user is now not joined to a user channel;
      * @param messagingProvider is used to publish the event
      * @param source is the appIdentifier of the origin app
      */
@@ -418,7 +418,7 @@ export class ChannelMessageHandler {
         listeners.push({ contextType: requestMessage.payload.contextType, listenerUUID, source });
 
         //if channel is private channel, publish privateChannelOnAddContextListenerEvent to all apps listening for them on channel
-        //if message.payload.channelId == null, it is refering to the current user channel
+        //if message.payload.channelId == null, it is referring to the current user channel
         if (
             requestMessage.payload.channelId != null &&
             this.privateChannels[requestMessage.payload.channelId] != null
@@ -861,5 +861,68 @@ export class ChannelMessageHandler {
                 appIdentifiers,
             );
         }
+    }
+
+    /**
+     * Clean up all channel subscriptions for a disconnected proxy
+     * @param appId The app ID of the disconnected proxy
+     */
+    public cleanupDisconnectedProxy(appId: FullyQualifiedAppIdentifier): void {
+        // Clean up private channel subscriptions
+        Object.values(this.privateChannels).forEach(channel => {
+            if (channel) {
+                channel.allowedList = channel.allowedList.filter(app => !appInstanceEquals(app, appId));
+                if (channel.allowedList.length === 0) {
+                    delete this.privateChannels[channel.channel.id];
+                }
+            }
+        });
+
+        // Clean up user channel subscriptions
+        Object.entries(this.userChannels).forEach(([channelId, channel]) => {
+            if (channel && channel.contextHistory) {
+                // Remove any context entries from this proxy
+                const filteredEntries = Object.entries(channel.contextHistory.byContext).filter(
+                    ([_, context]) => context && !appInstanceEquals(context.source, appId),
+                );
+
+                channel.contextHistory.byContext = Object.fromEntries(filteredEntries);
+
+                // If channel is empty after cleanup, remove it
+                if (
+                    Object.keys(channel.contextHistory.byContext).length === 0 &&
+                    channel.contextHistory.mostRecent == null
+                ) {
+                    delete this.userChannels[channelId];
+                }
+            }
+        });
+
+        // Clean up event listeners
+        Object.entries(this.privateChannelEventListeners).forEach(([eventType, listeners]) => {
+            if (listeners) {
+                const filteredListeners = listeners.filter(listener => !appInstanceEquals(listener.source, appId));
+                if (filteredListeners.length > 0) {
+                    this.privateChannelEventListeners[eventType as keyof typeof this.privateChannelEventListeners] =
+                        filteredListeners;
+                } else {
+                    delete this.privateChannelEventListeners[
+                        eventType as keyof typeof this.privateChannelEventListeners
+                    ];
+                }
+            }
+        });
+
+        // Clean up context listeners
+        Object.entries(this.contextListeners).forEach(([channelId, listeners]) => {
+            if (listeners) {
+                const filteredListeners = listeners.filter(listener => !appInstanceEquals(listener.source, appId));
+                if (filteredListeners.length > 0) {
+                    this.contextListeners[channelId] = filteredListeners;
+                } else {
+                    delete this.contextListeners[channelId];
+                }
+            }
+        });
     }
 }

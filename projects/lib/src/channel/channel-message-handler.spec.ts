@@ -10,6 +10,7 @@
 
 import { BrowserTypes, ChannelError, Contact, Context, EventHandler, Listener, PrivateChannel } from '@finos/fdc3';
 import {
+    any,
     IMocked,
     Mock,
     proxyJestModule,
@@ -1889,6 +1890,611 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
             expect(
                 mockRootMessagingProvider.withFunction('publishEvent').withParametersEqualTo(expectedMessage, [source]),
             ).wasNotCalled();
+        });
+    });
+
+    describe(`cleanupDisconnectedProxy`, () => {
+        let source: FullyQualifiedAppIdentifier;
+        let otherSource: FullyQualifiedAppIdentifier;
+        const testContext: Contact = {
+            type: 'fdc3.contact',
+            name: 'Test Contact',
+            id: { email: 'test@example.com' },
+        };
+
+        beforeEach(() => {
+            // Set up test app identifiers
+            source = {
+                appId: mockedTargetAppId,
+                instanceId: mockedTargetInstanceId,
+            };
+
+            otherSource = {
+                appId: mockedAppIdTwo,
+                instanceId: mockedInstanceIdTwo,
+            };
+        });
+
+        it(`should not prevent a disconnected proxy from broadcasting to a private channel`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a channel and add context from the source app
+            const userChannel: BrowserTypes.Channel = {
+                id: mockedChannelId,
+                type: 'user',
+                displayMetadata: {
+                    name: 'Test Channel',
+                    color: 'red',
+                    glyph: 'test',
+                },
+            };
+
+            // Create the channel
+            mockGetOrCreateChannel(mockedChannelId, instance);
+
+            // Join the channel with source app
+            mockJoinChannel(userChannel, instance, source);
+
+            // First broadcast should succeed
+            const initialBroadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'initial-broadcast',
+                    timestamp: mockedDate,
+                    source,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Reset the mocks for clean verification
+            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
+            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
+
+            // Create a new instance with the fresh mock
+            const freshInstance = createInstance();
+
+            // Create the channel
+            mockGetOrCreateChannel(mockedChannelId, freshInstance);
+
+            // Rejoin the channel
+            mockJoinChannel(userChannel, freshInstance, source);
+
+            // Process the broadcast with the fresh instance
+            freshInstance.onBroadcastRequest(initialBroadcastRequest, source);
+
+            // Verify successful response was sent before disconnection
+            expect(
+                mockRootMessagingProvider.withFunction('publishResponseMessage').withParameters(
+                    {
+                        isExpectedValue: event =>
+                            event.type === 'broadcastResponse' && event.payload.error === undefined,
+                        expectedDisplayValue: 'Is a broadcastResponse event with no error',
+                    },
+                    any(),
+                ),
+            ).wasCalledAtLeastOnce();
+
+            // Now disconnect the proxy
+            freshInstance.cleanupDisconnectedProxy(source);
+
+            // Attempt to broadcast after disconnection
+            const postDisconnectBroadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'post-disconnect-broadcast',
+                    timestamp: mockedDate,
+                    source,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Reset the mocks again for post-disconnect verification
+            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
+            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
+
+            // Create another instance with the fresh mock
+            const postDisconnectInstance = createInstance();
+
+            // Create the channel
+            mockGetOrCreateChannel(mockedChannelId, postDisconnectInstance);
+
+            // Rejoin the channel (simulating the state after disconnection)
+            mockJoinChannel(userChannel, postDisconnectInstance, source);
+
+            // Clean up again since we're using a new instance
+            postDisconnectInstance.cleanupDisconnectedProxy(source);
+
+            // Process the broadcast after disconnection with the new instance
+            postDisconnectInstance.onBroadcastRequest(postDisconnectBroadcastRequest, source);
+
+            // Find access denied responses (what we expect after disconnect)
+            expect(
+                mockRootMessagingProvider.withFunction('publishResponseMessage').withParameters(
+                    {
+                        isExpectedValue: event =>
+                            event.type === 'broadcastResponse' && event.payload.error === ChannelError.AccessDenied,
+                        expectedDisplayValue: 'Is a broadcastResponse event with AccessDenied error',
+                    },
+                    any(),
+                ),
+            ).wasCalledOnce();
+
+            // Find broadcast events (which shouldn't exist after disconnect)
+            expect(
+                mockRootMessagingProvider.withFunction('publishEvent').withParameters(
+                    {
+                        isExpectedValue: event => event.type === 'broadcastEvent',
+                        expectedDisplayValue: 'Is a broadcastEvent event',
+                    },
+                    any(),
+                ),
+            ).wasNotCalled();
+        });
+
+        it(`should prevent events from being delivered to a disconnected proxy`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a channel
+            const userChannel: BrowserTypes.Channel = {
+                id: mockedChannelId,
+                type: 'user',
+                displayMetadata: {
+                    name: 'Test Channel',
+                    color: 'red',
+                    glyph: 'test',
+                },
+            };
+
+            // Join the channel with both source and otherSource app
+            mockJoinChannel(userChannel, instance, source);
+            mockJoinChannel(userChannel, instance, otherSource);
+
+            // Add context listeners for both apps
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', source, instance);
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', otherSource, instance);
+
+            // Store the original event publish function to create a spy
+            const originalPublishEvent = mockRootMessagingProvider.mock.publishEvent;
+            let sourceReceivedEvent = false;
+            let otherSourceReceivedEvent = false;
+
+            // Replace with spy to track who receives broadcast events
+            mockRootMessagingProvider.mock.publishEvent = (event, targets) => {
+                if (event.type === 'broadcastEvent') {
+                    // Check if source is among the targets
+                    if (
+                        targets.some(target => target.appId === source.appId && target.instanceId === source.instanceId)
+                    ) {
+                        sourceReceivedEvent = true;
+                    }
+
+                    // Check if otherSource is among the targets
+                    if (
+                        targets.some(
+                            target =>
+                                target.appId === otherSource.appId && target.instanceId === otherSource.instanceId,
+                        )
+                    ) {
+                        otherSourceReceivedEvent = true;
+                    }
+                }
+                return originalPublishEvent(event, targets);
+            };
+
+            // Broadcast from otherSource before disconnection
+            const preBroadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'pre-disconnect-broadcast',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast
+            instance.onBroadcastRequest(preBroadcastRequest, otherSource);
+
+            // Before disconnection, both apps should receive events
+            expect(sourceReceivedEvent).toBe(true);
+            expect(otherSourceReceivedEvent).toBe(true);
+
+            // Now disconnect the source proxy
+            instance.cleanupDisconnectedProxy(source);
+
+            // Reset the flags for tracking post-disconnect behavior
+            sourceReceivedEvent = false;
+            otherSourceReceivedEvent = false;
+
+            // Broadcast from otherSource after disconnection
+            const postBroadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'post-disconnect-broadcast',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast
+            instance.onBroadcastRequest(postBroadcastRequest, otherSource);
+
+            // After disconnection, source should not receive events, but otherSource should
+            expect(sourceReceivedEvent).toBe(false);
+            expect(otherSourceReceivedEvent).toBe(true);
+        });
+
+        it(`should allow other apps to continue working after one app is disconnected`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a channel
+            const userChannel: BrowserTypes.Channel = {
+                id: mockedChannelId,
+                type: 'user',
+                displayMetadata: {
+                    name: 'Test Channel',
+                    color: 'red',
+                    glyph: 'test',
+                },
+            };
+
+            // Join the channel with both source and otherSource app
+            mockJoinChannel(userChannel, instance, source);
+            mockJoinChannel(userChannel, instance, otherSource);
+
+            // Add context listeners for both apps
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', source, instance);
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', otherSource, instance);
+
+            // Disconnect the source proxy
+            instance.cleanupDisconnectedProxy(source);
+
+            // Reset the mock for clean verification
+            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
+            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
+
+            // Broadcast from otherSource after disconnection
+            const broadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'other-source-broadcast',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast
+            instance.onBroadcastRequest(broadcastRequest, otherSource);
+
+            // Verify successful response was sent to otherSource
+            expect(mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.length).toBeGreaterThan(0);
+            const successResponse = mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.[0];
+            expect(successResponse).toBeDefined();
+            expect(successResponse?.[0].type).toBe('broadcastResponse');
+            expect(successResponse?.[0].payload.error).toBeUndefined();
+            expect(successResponse?.[1]).toEqual(otherSource);
+
+            // Verify broadcast events were sent to otherSource (still connected)
+            const postDisconnectEvents =
+                mockRootMessagingProvider.functionCallLookup.publishEvent?.filter(
+                    call => call[0].type === 'broadcastEvent',
+                ) || [];
+            const otherSourceReceivedPostEvent = postDisconnectEvents.some(call => {
+                const targets = call[1];
+                return targets.some(
+                    target => target.appId === otherSource.appId && target.instanceId === otherSource.instanceId,
+                );
+            });
+            expect(otherSourceReceivedPostEvent).toBe(true);
+        });
+
+        it(`should make context from disconnected proxy unavailable`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a channel
+            const userChannel: BrowserTypes.Channel = {
+                id: mockedChannelId,
+                type: 'user',
+                displayMetadata: {
+                    name: 'Test Channel',
+                    color: 'red',
+                    glyph: 'test',
+                },
+            };
+
+            // Join the channel with source app
+            mockJoinChannel(userChannel, instance, source);
+
+            // Add a context to the channel from the source app
+            const context: Context = {
+                type: 'fdc3.contact',
+                name: 'Test Contact',
+                id: { email: 'test@example.com' },
+                source: source,
+            };
+
+            const broadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: mockedRequestUuid,
+                    timestamp: mockedDate,
+                    source,
+                },
+                payload: {
+                    context,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast to add context to the channel
+            instance.onBroadcastRequest(broadcastRequest, source);
+
+            // Store the original response function to create a spy
+            const originalPublishResponseMessage = mockRootMessagingProvider.mock.publishResponseMessage;
+            let contextAvailable = false;
+
+            // Create a spy to track context responses
+            mockRootMessagingProvider.mock.publishResponseMessage = (response, target) => {
+                if (response.type === 'getCurrentContextResponse') {
+                    // Check if this is a context response with non-null context
+                    const typedPayload = response.payload as { context: Context | null };
+                    contextAvailable = typedPayload.context !== null;
+                }
+                return originalPublishResponseMessage(response, target);
+            };
+
+            // Check context is available before disconnection
+            const preGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
+                meta: {
+                    requestUuid: 'pre-disconnect-get-context',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    contextType: 'fdc3.contact',
+                    channelId: mockedChannelId,
+                },
+                type: 'getCurrentContextRequest',
+            };
+
+            // Get the context before disconnection
+            instance.onGetCurrentContextRequest(preGetContextRequest, otherSource);
+
+            // Verify context was available before disconnection
+            expect(contextAvailable).toBe(true);
+
+            // Now disconnect the proxy
+            instance.cleanupDisconnectedProxy(source);
+
+            // Reset the flag to track what happens after disconnection
+            contextAvailable = false;
+
+            // Check context is no longer available after disconnection
+            const postGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
+                meta: {
+                    requestUuid: 'post-disconnect-get-context',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    contextType: 'fdc3.contact',
+                    channelId: mockedChannelId,
+                },
+                type: 'getCurrentContextRequest',
+            };
+
+            // Get the context after disconnection
+            instance.onGetCurrentContextRequest(postGetContextRequest, otherSource);
+
+            // Verify context is no longer available after disconnection
+            expect(contextAvailable).toBe(false);
+        });
+
+        it(`should handle empty collections gracefully`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a proxy identifier that hasn't been used
+            const unusedProxy: FullyQualifiedAppIdentifier = {
+                appId: 'unused-app-id',
+                instanceId: 'unused-instance-id',
+            };
+
+            // Call the cleanup method without setting up any resources
+            expect(() => {
+                instance.cleanupDisconnectedProxy(unusedProxy);
+            }).not.toThrow();
+        });
+
+        it(`should prevent events from being delivered to a disconnected proxy`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a channel
+            const userChannel: BrowserTypes.Channel = {
+                id: mockedChannelId,
+                type: 'user',
+                displayMetadata: {
+                    name: 'Test Channel',
+                    color: 'red',
+                    glyph: 'test',
+                },
+            };
+
+            // Join the channel with both source and otherSource app
+            mockJoinChannel(userChannel, instance, source);
+            mockJoinChannel(userChannel, instance, otherSource);
+
+            // Add context listeners for both apps
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', source, instance);
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', otherSource, instance);
+
+            // Store the original event publish function to create a spy
+            const originalPublishEvent = mockRootMessagingProvider.mock.publishEvent;
+            let sourceReceivedEvent = false;
+            let otherSourceReceivedEvent = false;
+
+            // Replace with spy to track who receives broadcast events
+            mockRootMessagingProvider.mock.publishEvent = (event, targets) => {
+                if (event.type === 'broadcastEvent') {
+                    // Check if source is among the targets
+                    if (
+                        targets.some(target => target.appId === source.appId && target.instanceId === source.instanceId)
+                    ) {
+                        sourceReceivedEvent = true;
+                    }
+
+                    // Check if otherSource is among the targets
+                    if (
+                        targets.some(
+                            target =>
+                                target.appId === otherSource.appId && target.instanceId === otherSource.instanceId,
+                        )
+                    ) {
+                        otherSourceReceivedEvent = true;
+                    }
+                }
+                return originalPublishEvent(event, targets);
+            };
+
+            // Broadcast from otherSource before disconnection
+            const preBroadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'pre-disconnect-broadcast',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast
+            instance.onBroadcastRequest(preBroadcastRequest, otherSource);
+
+            // Before disconnection, both apps should receive events
+            expect(sourceReceivedEvent).toBe(true);
+            expect(otherSourceReceivedEvent).toBe(true);
+
+            // Now disconnect the source proxy
+            instance.cleanupDisconnectedProxy(source);
+
+            // Reset the flags for tracking post-disconnect behavior
+            sourceReceivedEvent = false;
+            otherSourceReceivedEvent = false;
+
+            // Broadcast from otherSource after disconnection
+            const postBroadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'post-disconnect-broadcast',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast
+            instance.onBroadcastRequest(postBroadcastRequest, otherSource);
+
+            // After disconnection, source should not receive events, but otherSource should
+            expect(sourceReceivedEvent).toBe(false);
+            expect(otherSourceReceivedEvent).toBe(true);
+        });
+
+        it(`should allow other apps to continue working after one app is disconnected`, async () => {
+            // Create an instance
+            const instance = createInstance();
+
+            // Set up a channel
+            const userChannel: BrowserTypes.Channel = {
+                id: mockedChannelId,
+                type: 'user',
+                displayMetadata: {
+                    name: 'Test Channel',
+                    color: 'red',
+                    glyph: 'test',
+                },
+            };
+
+            // Join the channel with both source and otherSource app
+            mockJoinChannel(userChannel, instance, source);
+            mockJoinChannel(userChannel, instance, otherSource);
+
+            // Add context listeners for both apps
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', source, instance);
+            mockAddContextListener(mockedChannelId, 'fdc3.contact', otherSource, instance);
+
+            // Disconnect the source proxy
+            instance.cleanupDisconnectedProxy(source);
+
+            // Reset the mock for clean verification
+            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
+            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
+
+            // Broadcast from otherSource after disconnection
+            const broadcastRequest: BrowserTypes.BroadcastRequest = {
+                meta: {
+                    requestUuid: 'other-source-broadcast',
+                    timestamp: mockedDate,
+                    source: otherSource,
+                },
+                payload: {
+                    context: testContext,
+                    channelId: mockedChannelId,
+                },
+                type: 'broadcastRequest',
+            };
+
+            // Process the broadcast
+            instance.onBroadcastRequest(broadcastRequest, otherSource);
+
+            // Verify successful response was sent to otherSource
+            expect(mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.length).toBeGreaterThan(0);
+            const successResponse = mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.[0];
+            expect(successResponse).toBeDefined();
+            expect(successResponse?.[0].type).toBe('broadcastResponse');
+            expect(successResponse?.[0].payload.error).toBeUndefined();
+            expect(successResponse?.[1]).toEqual(otherSource);
+
+            // Verify broadcast events were sent to otherSource (still connected)
+            const postDisconnectEvents =
+                mockRootMessagingProvider.functionCallLookup.publishEvent?.filter(
+                    call => call[0].type === 'broadcastEvent',
+                ) || [];
+            const otherSourceReceivedPostEvent = postDisconnectEvents.some(call => {
+                const targets = call[1];
+                return targets.some(
+                    target => target.appId === otherSource.appId && target.instanceId === otherSource.instanceId,
+                );
+            });
+            expect(otherSourceReceivedPostEvent).toBe(true);
         });
     });
 
