@@ -1894,16 +1894,8 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
     });
 
     describe(`cleanupDisconnectedProxy`, () => {
-        // NOTE: Comprehensive tests for cleanupDisconnectedProxy are in cleanup-disconnected-proxy.spec.ts
-        // These tests are skipped here to avoid duplication and potential conflicts
-
         let source: FullyQualifiedAppIdentifier;
         let otherSource: FullyQualifiedAppIdentifier;
-        const testContext: Contact = {
-            type: 'fdc3.contact',
-            name: 'Test Contact',
-            id: { email: 'test@example.com' },
-        };
         let mockRootMessagingProvider: IMocked<IRootPublisher>;
         let mockedHelpers: IMocked<typeof helpersImport>;
         let testContact: Contact;
@@ -1930,8 +1922,6 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                 setupFunction('publishResponseMessage'),
                 setupFunction('publishEvent'),
             );
-
-            // No need for mockMessagingProvider in these tests
 
             mockedHelpers = Mock.create<typeof helpersImport>().setup(
                 setupFunction('generateUUID', () => mockedGeneratedUuid),
@@ -1960,7 +1950,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
         });
 
         it(`should remove disconnected proxy from current user channels`, async () => {
-            // ARRANGE: Create an instance and set up test environment
+            // Arrange: Create an instance and set up test environment
             const instance = createInstance();
 
             // Set up a channel and join it with the source app
@@ -2022,11 +2012,11 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
             expect(preResponsePayload.channel).not.toBeNull();
             expect(preResponsePayload.channel?.id).toBe(mockedChannelId);
 
-            // ACT: Disconnect the proxy
+            // Act: Disconnect the proxy
             instance.cleanupDisconnectedProxy(source);
             await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
 
-            // VERIFY: Check that the proxy has been removed from currentUserChannels
+            // Verify: Check that the proxy has been removed from currentUserChannels
             // This is an indirect verification since currentUserChannels is private
             // We'll verify by checking that the app can no longer get its current channel
 
@@ -2077,7 +2067,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
         });
 
         it(`should clean up context listeners for disconnected proxy`, async () => {
-            // ARRANGE: Create an instance and set up test environment
+            // Arrange: Create an instance and set up test environment
             const instance = createInstance();
 
             // Set up a channel
@@ -2151,7 +2141,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
             });
             expect(sourceReceivedPreDisconnect).toBe(true);
 
-            // ACT: Disconnect the source proxy
+            // Act: Disconnect the source proxy
             instance.cleanupDisconnectedProxy(source);
             await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
 
@@ -2187,7 +2177,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
         });
 
         it(`should clean up user channel contexts`, async () => {
-            // ARRANGE: Create an instance and set up test environment
+            // Arrange: Create an instance and set up test environment
             const instance = createInstance();
 
             // Set up a user channel
@@ -2229,11 +2219,11 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
             // Clear response tracking for clean verification
             mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
 
-            // ACT: Disconnect the proxy that provided the context
+            // Act: Disconnect the proxy that provided the context
             instance.cleanupDisconnectedProxy(source);
             await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
 
-            // VERIFY: Context from disconnected proxy should no longer be available
+            // Verify: Context from disconnected proxy should no longer be available
             // Request context after disconnection
             const postGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
                 meta: {
@@ -2300,417 +2290,8 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
             }).not.toThrow();
         });
 
-        it.skip(`should remove disconnected proxy from current user channels`, async () => {
-            // ARRANGE: Create an instance and set up test environment
-            const instance = createInstance();
-
-            // Set up a channel and join it with the source app
-            const userChannel: BrowserTypes.Channel = {
-                id: mockedChannelId,
-                type: 'user',
-                displayMetadata: {
-                    name: 'Test Channel',
-                    color: 'red',
-                },
-            };
-            mockJoinChannel(userChannel, instance, source);
-
-            // ACT: Disconnect the proxy
-            instance.cleanupDisconnectedProxy(source);
-            await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
-
-            // VERIFY: The proxy should no longer be able to get its current channel
-            // Clear response tracking for clean verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-
-            // Request current channel after disconnection
-            const getCurrentChannelRequest: BrowserTypes.GetCurrentChannelRequest = {
-                meta: {
-                    requestUuid: 'post-disconnect-get-channel',
-                    timestamp: mockedDate,
-                    source,
-                },
-                payload: {},
-                type: 'getCurrentChannelRequest',
-            };
-            instance.onGetCurrentChannelRequest(getCurrentChannelRequest, source);
-            await wait(); // Ensure async operations complete
-
-            // Verify the response indicates no current channel
-            const getCurrentChannelResponses =
-                mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.filter(call => {
-                    const response = call[0];
-                    return (
-                        response.type === 'getCurrentChannelResponse' &&
-                        response.meta?.requestUuid === 'post-disconnect-get-channel'
-                    );
-                }) || [];
-
-            expect(getCurrentChannelResponses.length).toBe(1);
-            const responsePayload = getCurrentChannelResponses[0][0].payload as {
-                channel: BrowserTypes.Channel | null;
-            };
-            expect(responsePayload.channel).toBeNull();
-        });
-
-        it.skip(`should clean up context listeners for disconnected proxy`, async () => {
-            // ARRANGE: Create an instance and set up test environment
-            const instance = createInstance();
-
-            // Set up a channel
-            const userChannel: BrowserTypes.Channel = {
-                id: mockedChannelId,
-                type: 'user',
-                displayMetadata: {
-                    name: 'Test Channel',
-                    color: 'red',
-                },
-            };
-
-            // Join the channel with source and otherSource apps
-            mockJoinChannel(userChannel, instance, source);
-            mockJoinChannel(userChannel, instance, otherSource);
-
-            // Add context listeners for both apps
-            mockAddContextListener(mockedChannelId, 'fdc3.contact', source, instance);
-            mockAddContextListener(mockedChannelId, 'fdc3.contact', otherSource, instance);
-
-            // Clear any previous mock calls for clean verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
-
-            // Broadcast context from otherSource before disconnection
-            const preBroadcastRequest: BrowserTypes.BroadcastRequest = {
-                meta: {
-                    requestUuid: 'pre-disconnect-broadcast',
-                    timestamp: mockedDate,
-                    source: otherSource,
-                },
-                payload: {
-                    context: testContext,
-                    channelId: mockedChannelId,
-                },
-                type: 'broadcastRequest',
-            };
-
-            // Process the broadcast
-            instance.onBroadcastRequest(preBroadcastRequest, otherSource);
-            await wait(); // Ensure async operations complete
-
-            // Verify source app received events before disconnection
-            const preBroadcastEvents =
-                mockRootMessagingProvider.functionCallLookup.publishEvent?.filter(
-                    call => call[0].type === 'broadcastEvent',
-                ) || [];
-
-            const sourceReceivedPreDisconnect = preBroadcastEvents.some(call => {
-                const targets = call[1] as FullyQualifiedAppIdentifier[];
-                return targets.some(target => helpersImport.appInstanceEquals(target, source));
-            });
-            expect(sourceReceivedPreDisconnect).toBe(true);
-
-            // ACT: Disconnect the source proxy
-            instance.cleanupDisconnectedProxy(source);
-            await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
-
-            // Clear mocks for post-disconnect verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
-
-            // Broadcast from otherSource after disconnection
-            const postBroadcastRequest: BrowserTypes.BroadcastRequest = {
-                meta: {
-                    requestUuid: 'post-disconnect-broadcast',
-                    timestamp: mockedDate,
-                    source: otherSource,
-                },
-                payload: {
-                    context: testContext,
-                    channelId: mockedChannelId,
-                },
-                type: 'broadcastRequest',
-            };
-
-            // Process the broadcast
-            instance.onBroadcastRequest(postBroadcastRequest, otherSource);
-            await wait(); // Ensure async operations complete
-
-            // Verify no events are sent to disconnected proxy
-            const eventCallsToDisconnectedProxy =
-                mockRootMessagingProvider.functionCallLookup.publishEvent?.filter(call => {
-                    const targets = call[1] as FullyQualifiedAppIdentifier[];
-                    return targets.some(target => helpersImport.appInstanceEquals(target, source));
-                }) || [];
-            expect(eventCallsToDisconnectedProxy.length).toBe(0);
-
-            // Verify otherSource still receives events
-            const otherSourceReceivedEvents =
-                mockRootMessagingProvider.functionCallLookup.publishEvent?.filter(call => {
-                    const targets = call[1] as FullyQualifiedAppIdentifier[];
-                    return targets.some(target => helpersImport.appInstanceEquals(target, otherSource));
-                }) || [];
-            expect(otherSourceReceivedEvents.length).toBeGreaterThan(0);
-        });
-
-        it.skip(`should clean up user channel contexts`, async () => {
-            // ARRANGE: Create an instance and set up test environment
-            const instance = createInstance();
-
-            // Set up a channel
-            const userChannel: BrowserTypes.Channel = {
-                id: mockedChannelId,
-                type: 'user',
-                displayMetadata: {
-                    name: 'Test Channel',
-                    color: 'red',
-                },
-            };
-
-            // Join the channel with source app
-            mockJoinChannel(userChannel, instance, source);
-
-            // Add context to the channel from the source app
-            const broadcastRequest: BrowserTypes.BroadcastRequest = {
-                meta: {
-                    requestUuid: 'pre-disconnect-broadcast',
-                    timestamp: mockedDate,
-                    source,
-                },
-                payload: {
-                    context: testContext,
-                    channelId: mockedChannelId,
-                },
-                type: 'broadcastRequest',
-            };
-
-            // Process the broadcast to add context to the channel
-            instance.onBroadcastRequest(broadcastRequest, source);
-            await wait(); // Ensure async operations complete
-
-            // Verify context is available before disconnection
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-
-            const preGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
-                meta: {
-                    requestUuid: 'pre-disconnect-get-context',
-                    timestamp: mockedDate,
-                    source: otherSource,
-                },
-                payload: {
-                    contextType: 'fdc3.contact',
-                    channelId: mockedChannelId,
-                },
-                type: 'getCurrentContextRequest',
-            };
-
-            // Get the context before disconnection
-            instance.onGetCurrentContextRequest(preGetContextRequest, otherSource);
-            await wait(); // Ensure async operations complete
-
-            // Verify context was available before disconnection
-            const preDisconnectResponses =
-                mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.filter(call => {
-                    const response = call[0];
-                    return (
-                        response.type === 'getCurrentContextResponse' &&
-                        response.meta?.requestUuid === 'pre-disconnect-get-context'
-                    );
-                }) || [];
-
-            expect(preDisconnectResponses.length).toBe(1);
-            const preDisconnectResponse = preDisconnectResponses[0][0];
-            const preDisconnectContext = (preDisconnectResponse.payload as { context: Context | null }).context;
-            expect(preDisconnectContext).not.toBeNull();
-
-            // ACT: Disconnect the proxy that provided the context
-            instance.cleanupDisconnectedProxy(source);
-            await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
-
-            // Clear response tracking for post-disconnect verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-
-            // Request context after disconnection
-            const postGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
-                meta: {
-                    requestUuid: 'post-disconnect-get-context',
-                    timestamp: mockedDate,
-                    source: otherSource,
-                },
-                payload: {
-                    contextType: 'fdc3.contact',
-                    channelId: mockedChannelId,
-                },
-                type: 'getCurrentContextRequest',
-            };
-
-            // Get the context after disconnection
-            instance.onGetCurrentContextRequest(postGetContextRequest, otherSource);
-            await wait(); // Ensure async operations complete
-
-            // Verify context is no longer available after disconnection
-            const postDisconnectResponses =
-                mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.filter(call => {
-                    const response = call[0];
-                    return (
-                        response.type === 'getCurrentContextResponse' &&
-                        response.meta?.requestUuid === 'post-disconnect-get-context'
-                    );
-                }) || [];
-
-            expect(postDisconnectResponses.length).toBe(1);
-            const postDisconnectResponse = postDisconnectResponses[0][0];
-            const postDisconnectContext = (postDisconnectResponse.payload as { context: Context | null }).context;
-            expect(postDisconnectContext).toBeNull();
-        });
-
-        it.skip(`should make context from disconnected proxy unavailable`, async () => {
-            // ARRANGE: Create an instance and set up test environment
-            const instance = createInstance();
-
-            // Set up a channel
-            const userChannel: BrowserTypes.Channel = {
-                id: mockedChannelId,
-                type: 'user',
-                displayMetadata: {
-                    name: 'Test Channel',
-                    color: 'red',
-                    glyph: 'test',
-                },
-            };
-
-            // Join the channel with source app
-            mockJoinChannel(userChannel, instance, source);
-            // Join with another app that will request the context
-            mockJoinChannel(userChannel, instance, otherSource);
-
-            // Add context to the channel from the source app
-            const context: Context = {
-                type: 'fdc3.contact',
-                name: 'Test Contact',
-                id: { email: 'test@example.com' },
-                source: source,
-            };
-
-            // Clear any previous mock calls for clean verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-            mockRootMessagingProvider.functionCallLookup.publishEvent = [];
-
-            // Broadcast context from source app
-            const broadcastRequest: BrowserTypes.BroadcastRequest = {
-                meta: {
-                    requestUuid: 'pre-disconnect-broadcast',
-                    timestamp: mockedDate,
-                    source,
-                },
-                payload: {
-                    context,
-                    channelId: mockedChannelId,
-                },
-                type: 'broadcastRequest',
-            };
-
-            // Process the broadcast to add context to the channel
-            instance.onBroadcastRequest(broadcastRequest, source);
-            await wait(); // Ensure async operations complete
-
-            // VERIFY INITIAL STATE: Context should be available before disconnection
-            // Clear response tracking for clean verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-
-            // Request context before disconnection
-            const preGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
-                meta: {
-                    requestUuid: 'pre-disconnect-get-context',
-                    timestamp: mockedDate,
-                    source: otherSource,
-                },
-                payload: {
-                    contextType: 'fdc3.contact',
-                    channelId: mockedChannelId,
-                },
-                type: 'getCurrentContextRequest',
-            };
-
-            // Get the context before disconnection
-            instance.onGetCurrentContextRequest(preGetContextRequest, otherSource);
-            await wait(); // Ensure async operations complete
-
-            // Verify context was available before disconnection by checking response
-            const preDisconnectResponses =
-                mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.filter(call => {
-                    const response = call[0];
-                    return (
-                        response.type === 'getCurrentContextResponse' &&
-                        response.meta?.requestUuid === 'pre-disconnect-get-context'
-                    );
-                }) || [];
-
-            expect(preDisconnectResponses.length).toBe(1);
-            const preDisconnectResponse = preDisconnectResponses[0][0];
-            const preDisconnectContext = (preDisconnectResponse.payload as { context: Context | null }).context;
-            expect(preDisconnectContext).not.toBeNull();
-            expect(preDisconnectContext?.type).toBe('fdc3.contact');
-
-            // ACT: Disconnect the proxy that provided the context
-            instance.cleanupDisconnectedProxy(source);
-            await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
-
-            // Clear response tracking for post-disconnect verification
-            mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
-
-            // VERIFY AFTER DISCONNECTION: Context should no longer be available
-            // Request context after disconnection
-            const postGetContextRequest: BrowserTypes.GetCurrentContextRequest = {
-                meta: {
-                    requestUuid: 'post-disconnect-get-context',
-                    timestamp: mockedDate,
-                    source: otherSource,
-                },
-                payload: {
-                    contextType: 'fdc3.contact',
-                    channelId: mockedChannelId,
-                },
-                type: 'getCurrentContextRequest',
-            };
-
-            // Get the context after disconnection
-            instance.onGetCurrentContextRequest(postGetContextRequest, otherSource);
-            await wait(); // Ensure async operations complete
-
-            // Verify context is no longer available after disconnection
-            const postDisconnectResponses =
-                mockRootMessagingProvider.functionCallLookup.publishResponseMessage?.filter(call => {
-                    const response = call[0];
-                    return (
-                        response.type === 'getCurrentContextResponse' &&
-                        response.meta?.requestUuid === 'post-disconnect-get-context'
-                    );
-                }) || [];
-
-            expect(postDisconnectResponses.length).toBe(1);
-            const postDisconnectResponse = postDisconnectResponses[0][0];
-            const postDisconnectContext = (postDisconnectResponse.payload as { context: Context | null }).context;
-            expect(postDisconnectContext).toBeNull();
-        });
-
-        it.skip(`should handle empty collections gracefully`, async () => {
-            // Create an instance
-            const instance = createInstance();
-
-            // Set up a proxy identifier that hasn't been used
-            const unusedProxy: FullyQualifiedAppIdentifier = {
-                appId: 'unused-app-id',
-                instanceId: 'unused-instance-id',
-            };
-
-            // Call the cleanup method without setting up any resources
-            expect(() => {
-                instance.cleanupDisconnectedProxy(unusedProxy);
-            }).not.toThrow();
-        });
-
         it(`should clean up private channel event listeners`, async () => {
-            // ARRANGE: Create an instance and set up test environment
+            // Arrange: Create an instance and set up test environment
             const instance = createInstance();
 
             // Create a private channel
@@ -2729,11 +2310,11 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
             mockRootMessagingProvider.functionCallLookup.publishResponseMessage = [];
             mockRootMessagingProvider.functionCallLookup.publishEvent = [];
 
-            // ACT: Disconnect the source proxy
+            // Act: Disconnect the source proxy
             instance.cleanupDisconnectedProxy(source);
             await wait(HEARTBEAT.INTERVAL_MS); // Wait for disconnection to take effect
 
-            // VERIFY: Private channel event listeners for the disconnected proxy should be removed
+            // Verify: Private channel event listeners for the disconnected proxy should be removed
             // Trigger an event that would be published to listeners
             const privateChannelEvent: BrowserTypes.PrivateChannelOnAddContextListenerEvent = {
                 meta: {
