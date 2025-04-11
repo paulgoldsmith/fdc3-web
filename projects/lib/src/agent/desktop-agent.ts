@@ -493,7 +493,9 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             source,
         );
 
-        this.intentListenerCallbacks.forEach(callback => callback(source, requestMessage.payload.intent));
+        for (const callback of this.intentListenerCallbacks.values()) {
+            callback(source, requestMessage.payload.intent);
+        }
     }
 
     //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
@@ -1071,7 +1073,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         this.connectedProxies.delete(appId);
 
         // Clean up intent listeners
-        Object.entries(this.intentListeners).forEach(([intent, listeners]) => {
+        for (const [intent, listeners] of Object.entries(this.intentListeners)) {
             // Remove any listeners for this proxy
             const remainingListeners = listeners?.filter(listener => !appInstanceEquals(listener.appIdentifier, appId));
             if (remainingListeners?.length) {
@@ -1079,10 +1081,10 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             } else {
                 delete this.intentListeners[intent as Intent];
             }
-        });
+        }
 
         // Clean up event listeners
-        Object.entries(this.eventListeners).forEach(([eventType, listeners]) => {
+        for (const [eventType, listeners] of Object.entries(this.eventListeners)) {
             // Remove any listeners for this proxy
             const remainingListeners = listeners.filter(listener => !appInstanceEquals(listener.appIdentifier, appId));
             if (remainingListeners.length) {
@@ -1090,17 +1092,19 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             } else {
                 delete this.eventListeners[eventType as EventListenerKey];
             }
-        });
+        }
 
         // Clean up intent listener callbacks
         const callbacksToRemove: string[] = [];
-        this.intentListenerCallbacks.forEach((_, key) => {
+        for (const [key, _] of this.intentListenerCallbacks) {
             const decoded = decodeUUUrl(key);
             if (decoded && decoded.uuid && appInstanceEquals(decoded.payload as FullyQualifiedAppIdentifier, appId)) {
                 callbacksToRemove.push(key);
             }
-        });
-        callbacksToRemove.forEach(key => this.intentListenerCallbacks.delete(key));
+        }
+        for (const key of callbacksToRemove) {
+            this.intentListenerCallbacks.delete(key);
+        }
 
         // Clean up channel subscriptions
         this.channelMessageHandler.cleanupDisconnectedProxy(appId);

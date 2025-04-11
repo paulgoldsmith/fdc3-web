@@ -874,7 +874,7 @@ export class ChannelMessageHandler {
         }
 
         // Clean up context listeners
-        Object.entries(this.contextListeners).forEach(([channelId, listeners]) => {
+        for (const [channelId, listeners] of Object.entries(this.contextListeners)) {
             if (listeners) {
                 // Keep track of removed listeners for unsubscribe events
                 const removedListeners = listeners.filter(listener => appInstanceEquals(listener.source, appId));
@@ -889,15 +889,15 @@ export class ChannelMessageHandler {
 
                 // Trigger unsubscribe events for private channels
                 if (this.privateChannels[channelId]) {
-                    removedListeners.forEach(listener => {
+                    for (const listener of removedListeners) {
                         this.publishPrivateChannelOnUnsubscribeEvent(channelId, listener);
-                    });
+                    }
                 }
             }
-        });
+        }
 
         // Clean up event listeners while preserving others' subscriptions
-        Object.entries(this.privateChannelEventListeners).forEach(([eventType, listeners]) => {
+        for (const [eventType, listeners] of Object.entries(this.privateChannelEventListeners)) {
             if (listeners) {
                 const remainingListeners = listeners.filter(listener => !appInstanceEquals(listener.source, appId));
                 if (remainingListeners.length > 0) {
@@ -909,10 +909,10 @@ export class ChannelMessageHandler {
                     ];
                 }
             }
-        });
+        }
 
         // Cleanup private channels
-        Object.entries(this.privateChannels).forEach(([_, channel]) => {
+        for (const [_, channel] of Object.entries(this.privateChannels)) {
             if (channel) {
                 // Remove contexts from disconnected proxy
                 channel.contextHistory.byContext = Object.fromEntries(
@@ -936,10 +936,10 @@ export class ChannelMessageHandler {
                 // Note: Don't delete private channels even when empty, as other apps may still have references
                 // Only remove the app from allowed list
             }
-        });
+        }
 
         // Clean up user channel contexts
-        Object.entries(this.userChannels).forEach(([_, channel]) => {
+        for (const [_, channel] of Object.entries(this.userChannels)) {
             if (channel) {
                 // Remove contexts from disconnected proxy
                 channel.contextHistory.byContext = Object.fromEntries(
@@ -959,6 +959,6 @@ export class ChannelMessageHandler {
 
                 // Note: Don't delete user channels even when empty, as they are predefined
             }
-        });
+        }
     }
 }
