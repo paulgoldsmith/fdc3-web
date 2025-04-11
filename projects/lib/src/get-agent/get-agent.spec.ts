@@ -278,9 +278,6 @@ describe('getAgent', () => {
         await expect(getAgent({ timeoutMs: 10 })).rejects.toBe(AgentError.AgentNotFound);
     });
 
-    // This test was removed as it's redundant with the 'should handle fdc3Ready event' test
-    // and was causing timeouts
-
     it('should handle fdc3Ready event', () => {
         // Setup - ensure window.fdc3 is undefined initially
         (window as any).fdc3 = undefined;
