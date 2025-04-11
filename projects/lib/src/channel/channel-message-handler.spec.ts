@@ -2114,7 +2114,7 @@ describe(`${ChannelMessageHandler.name} (channel-message-handler)`, () => {
                 },
                 type: 'broadcastEvent',
             };
-            
+
             // Add the event to the mock call history, simulating it being sent to source
             if (!mockRootMessagingProvider.functionCallLookup.publishEvent) {
                 mockRootMessagingProvider.functionCallLookup.publishEvent = [];

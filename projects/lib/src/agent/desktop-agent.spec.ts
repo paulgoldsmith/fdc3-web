@@ -2678,7 +2678,7 @@ describe(`${DesktopAgentImpl.name} (desktop-agent)`, () => {
 
                 // Verify the proxy was disconnected and the resources were cleaned up
                 expect(mockChannelHandler.withFunction('cleanupDisconnectedProxy')).wasCalledOnce();
-            })
+            });
         });
     });
 
