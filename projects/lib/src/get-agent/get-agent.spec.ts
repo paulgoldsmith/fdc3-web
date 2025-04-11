@@ -284,10 +284,10 @@ describe('getAgent', () => {
         resetCachedPromise();
 
         // Mock the addEventListener to capture the fdc3Ready event handler
-        let capturedEventHandler: Function | undefined;
+        let capturedEventHandler: (event: Event) => void | undefined;
         const mockAddEventListener = jest.fn((eventType, handler) => {
             if (eventType === FDC3_READY_EVENT) {
-                capturedEventHandler = handler as Function;
+                capturedEventHandler = handler as (event: Event) => void;
             }
         });
 
