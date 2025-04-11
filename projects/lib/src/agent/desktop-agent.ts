@@ -76,9 +76,9 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
     private rootMessagePublisher: IRootPublisher;
 
     // Heartbeat tracking
-    private readonly heartbeatTimers: Map<FullyQualifiedAppIdentifier, NodeJS.Timeout> = new Map();
+    private readonly heartbeatTimers: Map<FullyQualifiedAppIdentifier, ReturnType<typeof setInterval>> = new Map();
     private readonly heartbeatRetries: Map<FullyQualifiedAppIdentifier, number> = new Map();
-    private readonly heartbeatTimeouts: Map<FullyQualifiedAppIdentifier, NodeJS.Timeout> = new Map();
+    private readonly heartbeatTimeouts: Map<FullyQualifiedAppIdentifier, ReturnType<typeof setTimeout>> = new Map();
     private readonly connectedProxies: Set<FullyQualifiedAppIdentifier> = new Set();
 
     constructor(params: RootDesktopAgentParams) {
