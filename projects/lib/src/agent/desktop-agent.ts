@@ -990,6 +990,12 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
      * @param appId The app ID of the proxy to monitor
      */
     private startHeartbeat(appId: FullyQualifiedAppIdentifier): void {
+        // Ignore if the app ID is the same as the current app instance
+        // This prevents the heartbeat from being sent to itself
+        if (appInstanceEquals(appId, this.appIdentifier)) {
+            return;
+        }
+
         if (this.heartbeatTimers.has(appId)) {
             return; // Already monitoring this proxy
         }
@@ -1002,6 +1008,8 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         }, HEARTBEAT.INTERVAL_MS);
 
         this.heartbeatTimers.set(appId, timer);
+
+        log('Starting keep-alive for proxy', 'info', appId);
 
         // Send initial appId
         void this.sendHeartbeat(appId);
@@ -1036,8 +1044,9 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                 const currentRetries = this.heartbeatRetries.get(appId) ?? 0;
                 this.heartbeatRetries.set(appId, currentRetries + 1);
                 log(
-                    `Heartbeat acknowledgment timeout for proxy ${JSON.stringify(appId)}. ` +
-                        `Attempt ${currentRetries + 1}/${HEARTBEAT.MAX_TRIES}`,
+                    `Heartbeat acknowledgment timeout for proxy. Attempt ${currentRetries + 1}/${HEARTBEAT.MAX_TRIES}`,
+                    'warn',
+                    appId,
                 );
             }, HEARTBEAT.TIMEOUT_MS);
 

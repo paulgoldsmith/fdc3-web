@@ -2679,6 +2679,41 @@ describe(`${DesktopAgentImpl.name} (desktop-agent)`, () => {
                 // Verify the proxy was disconnected and the resources were cleaned up
                 expect(mockChannelHandler.withFunction('cleanupDisconnectedProxy')).wasCalledOnce();
             });
+
+            it('should not send heartbeats to itself when source is root agent', async () => {
+                createInstance();
+
+                const message: RequestMessage = {
+                    type: 'getInfoRequest',
+                    meta: {
+                        requestUuid: mockedRequestUuid,
+                        timestamp: currentDate,
+                        source: appIdentifier, // Using root agent's identifier as source
+                    },
+                    payload: {},
+                };
+
+                await postRequestMessage(message, appIdentifier);
+
+                // Wait for enough time that a heartbeat would have been sent if it was going to be
+                await wait(HEARTBEAT.INTERVAL_MS + 100);
+
+                // Verify no heartbeat was sent
+                const expectedHeartbeat: BrowserTypes.HeartbeatEvent = {
+                    type: 'heartbeatEvent',
+                    payload: {},
+                    meta: {
+                        eventUuid: mockedGeneratedUuid,
+                        timestamp: mockedDate,
+                    },
+                };
+
+                expect(
+                    mockRootPublisher
+                        .withFunction('publishEvent')
+                        .withParametersEqualTo(expectedHeartbeat, [appIdentifier]),
+                ).wasNotCalled();
+            });
         });
     });
 
