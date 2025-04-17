@@ -205,7 +205,7 @@ export class RootMessagePublisher implements IRootPublisher {
         const source = optionalSource ?? this.lookupSource(message.channelId);
 
         if (source == null) {
-            console.error(`Could not resolve source for unknown channelId: ${message.channelId})`);
+            console.error(`Could not resolve source for unknown channelId: ${message.channelId}`);
             return;
         }
 

@@ -261,7 +261,7 @@ describe('RootMessagePublisher', () => {
 
             // The test passes if the error was logged
             expect(consoleError).toHaveBeenCalledWith(
-                `Could not resolve source for unknown channelId: unknown-channel-id)`,
+                `Could not resolve source for unknown channelId: unknown-channel-id`,
             );
 
             // Clean up
