@@ -1058,13 +1058,33 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
     }
 
     /**
-     * Handle a proxy disconnection by cleaning up resources
+     * Handles cleanup when a proxy disconnects, including timers, listeners, and channel subscriptions.
      * @param appId The app ID of the disconnected proxy
      */
     private handleProxyDisconnect(appId: FullyQualifiedAppIdentifier): void {
         log(`Proxy ${JSON.stringify(appId)} disconnected`);
 
         // Clear timers
+        this.clearHeartbeatTimers(appId);
+
+        // Clean up intent listeners
+        this.cleanupIntentListeners(appId);
+
+        // Clean up event listeners
+        this.cleanupEventListeners(appId);
+
+        // Clean up intent listener callbacks
+        this.cleanupIntentListenerCallbacks(appId);
+
+        // Clean up channel subscriptions
+        this.channelMessageHandler.cleanupDisconnectedProxy(appId);
+    }
+
+    /**
+     * Clears heartbeat and timeout timers for a given proxy app.
+     * @param appId The app ID of the proxy
+     */
+    private clearHeartbeatTimers(appId: FullyQualifiedAppIdentifier): void {
         const heartbeatTimer = this.heartbeatTimers.get(appId);
         if (heartbeatTimer) {
             clearInterval(heartbeatTimer);
@@ -1075,15 +1095,18 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             clearTimeout(timeoutTimer);
         }
 
-        // Clean up tracking maps
         this.heartbeatTimers.delete(appId);
         this.heartbeatRetries.delete(appId);
         this.heartbeatTimeouts.delete(appId);
         this.connectedProxies.delete(appId);
+    }
 
-        // Clean up intent listeners
+    /**
+     * Removes all intent listeners associated with a given proxy app.
+     * @param appId The app ID of the proxy
+     */
+    private cleanupIntentListeners(appId: FullyQualifiedAppIdentifier): void {
         for (const [intent, listeners] of Object.entries(this.intentListeners)) {
-            // Remove any listeners for this proxy
             const remainingListeners = listeners?.filter(listener => !appInstanceEquals(listener.appIdentifier, appId));
             if (remainingListeners?.length) {
                 this.intentListeners[intent as Intent] = remainingListeners;
@@ -1091,10 +1114,14 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                 delete this.intentListeners[intent as Intent];
             }
         }
+    }
 
-        // Clean up event listeners
+    /**
+     * Removes all event listeners associated with a given proxy app.
+     * @param appId The app ID of the proxy
+     */
+    private cleanupEventListeners(appId: FullyQualifiedAppIdentifier): void {
         for (const [eventType, listeners] of Object.entries(this.eventListeners)) {
-            // Remove any listeners for this proxy
             const remainingListeners = listeners.filter(listener => !appInstanceEquals(listener.appIdentifier, appId));
             if (remainingListeners.length) {
                 this.eventListeners[eventType as EventListenerKey] = remainingListeners;
@@ -1102,8 +1129,13 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                 delete this.eventListeners[eventType as EventListenerKey];
             }
         }
+    }
 
-        // Clean up intent listener callbacks
+    /**
+     * Removes all intent listener callbacks associated with a given proxy app.
+     * @param appId The app ID of the proxy
+     */
+    private cleanupIntentListenerCallbacks(appId: FullyQualifiedAppIdentifier): void {
         const callbacksToRemove: string[] = [];
         for (const [key, _] of this.intentListenerCallbacks) {
             const decoded = decodeUUUrl(key);
@@ -1114,8 +1146,5 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         for (const key of callbacksToRemove) {
             this.intentListenerCallbacks.delete(key);
         }
-
-        // Clean up channel subscriptions
-        this.channelMessageHandler.cleanupDisconnectedProxy(appId);
     }
 }
