@@ -868,26 +868,49 @@ export class ChannelMessageHandler {
      * @param appId The app ID of the disconnected proxy
      */
     public cleanupDisconnectedProxy(appId: FullyQualifiedAppIdentifier): void {
-        // Remove from current user channels
+        // Remove the app from the currentUserChannels mapping if it exists.
+        this.removeFromCurrentUserChannels(appId);
+
+        // Clean up all context listeners associated with the disconnected app and publish unsubscribe events for private channels.
+        this.cleanupContextListeners(appId);
+
+        // Remove all private channel event listeners associated with the disconnected app.
+        this.cleanupEventListeners(appId);
+
+        // Clean up private channel context history and allowed list for the disconnected app.
+        this.cleanupPrivateChannels(appId);
+
+        // Clean up user channel context history for the disconnected app.
+        this.cleanupUserChannelContexts(appId);
+    }
+
+    /**
+     * Removes the app from the currentUserChannels mapping if present.
+     * @param appId The app ID of the disconnected proxy
+     */
+    private removeFromCurrentUserChannels(appId: FullyQualifiedAppIdentifier): void {
         if (appId.instanceId) {
             delete this.currentUserChannels[appId.instanceId];
         }
+    }
 
-        // Clean up context listeners
+    /**
+     * Cleans up all context listeners associated with the disconnected app, and publishes unsubscribe events for private channels.
+     * @param appId The app ID of the disconnected proxy
+     */
+    private cleanupContextListeners(appId: FullyQualifiedAppIdentifier): void {
         for (const [channelId, listeners] of Object.entries(this.contextListeners)) {
             if (listeners) {
-                // Keep track of removed listeners for unsubscribe events
                 const removedListeners = listeners.filter(listener => appInstanceEquals(listener.source, appId));
-
-                // Update the listeners list
                 const remainingListeners = listeners.filter(listener => !appInstanceEquals(listener.source, appId));
+
                 if (remainingListeners.length > 0) {
                     this.contextListeners[channelId] = remainingListeners;
                 } else {
                     delete this.contextListeners[channelId];
                 }
 
-                // Trigger unsubscribe events for private channels
+                // Publish unsubscribe events for removed listeners on private channels
                 if (this.privateChannels[channelId]) {
                     for (const listener of removedListeners) {
                         this.publishPrivateChannelOnUnsubscribeEvent(channelId, listener);
@@ -895,8 +918,13 @@ export class ChannelMessageHandler {
                 }
             }
         }
+    }
 
-        // Clean up event listeners while preserving others' subscriptions
+    /**
+     * Cleans up all private channel event listeners associated with the disconnected app.
+     * @param appId The app ID of the disconnected proxy
+     */
+    private cleanupEventListeners(appId: FullyQualifiedAppIdentifier): void {
         for (const [eventType, listeners] of Object.entries(this.privateChannelEventListeners)) {
             if (listeners) {
                 const remainingListeners = listeners.filter(listener => !appInstanceEquals(listener.source, appId));
@@ -910,18 +938,21 @@ export class ChannelMessageHandler {
                 }
             }
         }
+    }
 
-        // Cleanup private channels
+    /**
+     * Cleans up private channel context history and allowed list for the disconnected app.
+     * @param appId The app ID of the disconnected proxy
+     */
+    private cleanupPrivateChannels(appId: FullyQualifiedAppIdentifier): void {
         for (const [_, channel] of Object.entries(this.privateChannels)) {
             if (channel) {
-                // Remove contexts from disconnected proxy
                 channel.contextHistory.byContext = Object.fromEntries(
                     Object.entries(channel.contextHistory.byContext).filter(
                         ([_, context]) => !context?.source || !appInstanceEquals(context.source, appId),
                     ),
                 );
 
-                // Update most recent context if it was from this proxy
                 if (
                     channel.contextHistory.mostRecent?.source &&
                     appInstanceEquals(channel.contextHistory.mostRecent.source, appId)
@@ -930,25 +961,24 @@ export class ChannelMessageHandler {
                     channel.contextHistory.mostRecent = remainingContexts[remainingContexts.length - 1] || undefined;
                 }
 
-                // Remove disconnected proxy from allowed list
                 channel.allowedList = channel.allowedList.filter(app => !appInstanceEquals(app, appId));
-
-                // Note: Don't delete private channels even when empty, as other apps may still have references
-                // Only remove the app from allowed list
             }
         }
+    }
 
-        // Clean up user channel contexts
+    /**
+     * Cleans up user channel context history for the disconnected app.
+     * @param appId The app ID of the disconnected proxy
+     */
+    private cleanupUserChannelContexts(appId: FullyQualifiedAppIdentifier): void {
         for (const [_, channel] of Object.entries(this.userChannels)) {
             if (channel) {
-                // Remove contexts from disconnected proxy
                 channel.contextHistory.byContext = Object.fromEntries(
                     Object.entries(channel.contextHistory.byContext).filter(
                         ([_, context]) => !context?.source || !appInstanceEquals(context.source, appId),
                     ),
                 );
 
-                // Update most recent context if needed
                 if (
                     channel.contextHistory.mostRecent?.source &&
                     appInstanceEquals(channel.contextHistory.mostRecent.source, appId)
@@ -956,8 +986,6 @@ export class ChannelMessageHandler {
                     const remainingContexts = Object.values(channel.contextHistory.byContext);
                     channel.contextHistory.mostRecent = remainingContexts[remainingContexts.length - 1] || undefined;
                 }
-
-                // Note: Don't delete user channels even when empty, as they are predefined
             }
         }
     }
