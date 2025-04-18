@@ -91,7 +91,7 @@ export class ChannelMessageHandler {
         this.contextListenerCallbacks.forEach(callback => callback(source, contextType));
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagentl
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagentl
     public onGetUserChannelsRequest(
         requestMessage: BrowserTypes.GetUserChannelsRequest,
         source: FullyQualifiedAppIdentifier,
@@ -108,7 +108,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onGetCurrentChannelRequest(
         requestMessage: BrowserTypes.GetCurrentChannelRequest,
         source: FullyQualifiedAppIdentifier,
@@ -124,7 +124,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onJoinUserChannelRequest(
         requestMessage: BrowserTypes.JoinUserChannelRequest,
         source: FullyQualifiedAppIdentifier,
@@ -162,7 +162,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onLeaveCurrentChannelRequest(
         requestMessage: BrowserTypes.LeaveCurrentChannelRequest,
         source: FullyQualifiedAppIdentifier,
@@ -219,7 +219,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#privatechannel
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#privatechannel
     public onPrivateChannelAddEventListenerRequest(
         requestMessage: BrowserTypes.PrivateChannelAddEventListenerRequest,
         source: FullyQualifiedAppIdentifier,
@@ -273,7 +273,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#privatechannel
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#privatechannel
     public onPrivateChannelUnsubscribeEventListenerRequest(
         requestMessage: BrowserTypes.PrivateChannelUnsubscribeEventListenerRequest,
         source: FullyQualifiedAppIdentifier,
@@ -303,7 +303,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onCreatePrivateChannelRequest(
         requestMessage: BrowserTypes.CreatePrivateChannelRequest,
         source: FullyQualifiedAppIdentifier,
@@ -337,7 +337,7 @@ export class ChannelMessageHandler {
         this.privateChannels[channelId]?.allowedList.push(app);
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onGetOrCreateChannelRequest(
         requestMessage: BrowserTypes.GetOrCreateChannelRequest,
         source: FullyQualifiedAppIdentifier,
@@ -384,7 +384,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onAddContextListenerRequest(
         requestMessage: BrowserTypes.AddContextListenerRequest,
         source: FullyQualifiedAppIdentifier,
@@ -498,7 +498,7 @@ export class ChannelMessageHandler {
         }
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onContextListenerUnsubscribeRequest(
         requestMessage: BrowserTypes.ContextListenerUnsubscribeRequest,
         source: FullyQualifiedAppIdentifier,
@@ -580,7 +580,7 @@ export class ChannelMessageHandler {
         return this.privateChannelEventListeners[eventType]?.filter(predicate).map(listener => listener.source) ?? [];
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     public onBroadcastRequest(
         requestMessage: BrowserTypes.BroadcastRequest,
         source: FullyQualifiedAppIdentifier,
@@ -793,7 +793,7 @@ export class ChannelMessageHandler {
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#privatechannel
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#privatechannel
     public onPrivateChannelDisconnectRequest(
         requestMessage: BrowserTypes.PrivateChannelDisconnectRequest,
         source: FullyQualifiedAppIdentifier,

@@ -174,7 +174,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         }
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     private async onRaiseIntentRequest(
         requestMessage: BrowserTypes.RaiseIntentRequest,
         source: FullyQualifiedAppIdentifier,
@@ -274,7 +274,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         }
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     private async onRaiseIntentForContext(
         requestMessage: BrowserTypes.RaiseIntentForContextRequest,
         source: FullyQualifiedAppIdentifier,
@@ -364,7 +364,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         }
     }
 
-    // https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#addintentlistener
+    // https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#addintentlistener
     private async onIntentResultRequest(
         requestMessage: BrowserTypes.IntentResultRequest,
         source: FullyQualifiedAppIdentifier,
@@ -433,7 +433,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     /**
      * Registers an app as an intent listener and publishes an AddIntentListenerResponse message
      */
@@ -498,7 +498,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         }
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     /**
      * Returns array of AppIdentifiers for all available instances of the given app
      */
@@ -533,7 +533,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     private async onGetInfoRequest(
         requestMessage: BrowserTypes.GetInfoRequest,
         source: FullyQualifiedAppIdentifier,
@@ -573,7 +573,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         }
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     private async onGetAppMetadataRequest(
         requestMessage: BrowserTypes.GetAppMetadataRequest,
         source: FullyQualifiedAppIdentifier,
@@ -606,7 +606,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     /**
      * Return AppIntent containing details of apps which handle given intent
      */
@@ -662,7 +662,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     /**
      * Add an event listener for a given event and app, and respond with the listenerUUID
      */
@@ -688,7 +688,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     /**
      * Remove event listener which source app has unsubscribed from
      */
@@ -717,7 +717,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     /**
      * Remove intent listener which source app has unsubscribed from
      */
@@ -746,7 +746,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     private async onFindIntentsByContextRequest(
         requestMessage: BrowserTypes.FindIntentsByContextRequest,
         source: FullyQualifiedAppIdentifier,
@@ -796,7 +796,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         );
     }
 
-    //https://deploy-preview-1191--fdc3.netlify.app/docs/next/api/specs/desktopAgentCommunicationProtocol#desktopagent
+    //https://fdc3.finos.org/docs/api/specs/desktopAgentCommunicationProtocol#desktopagent
     private async onOpenRequest(
         requestMessage: BrowserTypes.OpenRequest,
         source: FullyQualifiedAppIdentifier,
