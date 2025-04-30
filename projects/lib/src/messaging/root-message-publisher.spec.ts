@@ -237,6 +237,40 @@ describe('RootMessagePublisher', () => {
         });
     });
 
+    describe('onMessage', () => {
+        it('should log an error when source cannot be resolved for an unknown channelId', async () => {
+            const instance = createInstance();
+            await instance.initialise();
+
+            // Mock console.error
+            const consoleError = jest.spyOn(console, 'error').mockImplementation();
+
+            // Create a request message
+            const requestMessage: BrowserTypes.GetInfoRequest = {
+                meta: {
+                    requestUuid: 'requestUuid',
+                    timestamp: mockedDate,
+                },
+                payload: {},
+                type: 'getInfoRequest',
+            };
+
+            // Simulate receiving a message with an unknown channelId
+            mockRootMessagingProvider.functionCallLookup.subscribe?.[0][0]({
+                payload: requestMessage,
+                channelId: 'unknown-channel-id',
+            });
+
+            // The test passes if the error was logged
+            expect(consoleError).toHaveBeenCalledWith(
+                `Could not resolve source for unknown channelId: unknown-channel-id`,
+            );
+
+            // Clean up
+            consoleError.mockRestore();
+        });
+    });
+
     describe('publishEvent', () => {
         const eventMessage: BrowserTypes.IntentEvent = {
             meta: {
