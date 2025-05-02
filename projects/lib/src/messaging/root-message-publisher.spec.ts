@@ -18,21 +18,21 @@ import {
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AppDirectory } from '../app-directory';
-import { AppDirectoryApplication } from '../app-directory.contracts';
-import { FDC3_PROVIDER, FDC3_VERSION } from '../constants';
+import { AppDirectoryApplication } from '../app-directory.contracts.js';
+import { AppDirectory } from '../app-directory/index.js';
+import { FDC3_PROVIDER, FDC3_VERSION } from '../constants.js';
 import {
     FullyQualifiedAppIdentifier,
     IncomingMessageCallback,
     IProxyIncomingMessageEnvelope,
     IRootMessagingProvider,
     RequestMessage,
-} from '../contracts';
-import * as helpersImport from '../helpers';
-import { RootMessagePublisher } from './root-message-publisher';
+} from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { RootMessagePublisher } from './root-message-publisher.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

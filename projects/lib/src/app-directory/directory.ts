@@ -17,13 +17,13 @@ import {
     OpenError,
     ResolveError,
 } from '@finos/fdc3';
-import { AppDirectoryApplication } from '../app-directory.contracts';
+import { AppDirectoryApplication } from '../app-directory.contracts.js';
 import {
     FullyQualifiedAppId,
     FullyQualifiedAppIdentifier,
     IAppResolver,
     ResolveForContextResponse,
-} from '../contracts';
+} from '../contracts.js';
 import {
     createLogger,
     generateUUID,
@@ -33,7 +33,7 @@ import {
     isWebAppDetails,
     mapApplicationToMetadata,
     resolveAppIdentifier,
-} from '../helpers';
+} from '../helpers/index.js';
 
 const log = createLogger('AppDirectory');
 

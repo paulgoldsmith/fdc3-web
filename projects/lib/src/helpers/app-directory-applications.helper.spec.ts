@@ -10,14 +10,14 @@
 
 import { AppMetadata, BrowserTypes } from '@finos/fdc3';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AppDirectoryApplication } from '../app-directory.contracts';
-import { FDC3_PROVIDER, FDC3_VERSION } from '../constants';
-import { FullyQualifiedAppIdentifier } from '../contracts';
+import { AppDirectoryApplication } from '../app-directory.contracts.js';
+import { FDC3_PROVIDER, FDC3_VERSION } from '../constants.js';
+import { FullyQualifiedAppIdentifier } from '../contracts.js';
 import {
     getAppDirectoryApplications,
     getImplementationMetadata,
     mapApplicationToMetadata,
-} from './app-directory-applications.helper';
+} from './app-directory-applications.helper.js';
 
 describe('app-directory-applications.helper', () => {
     describe('getAppDirectoryApplications', () => {

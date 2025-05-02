@@ -10,7 +10,7 @@
 
 import { IProxyOutgoingMessageEnvelope } from '@morgan-stanley/fdc3-web';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { IframeMessagingProvider } from './iframe-messaging-provider';
+import { IframeMessagingProvider } from './iframe-messaging-provider.js';
 
 // Mock the key imports
 vi.mock('@morgan-stanley/fdc3-web', () => ({

@@ -9,20 +9,20 @@
  * and limitations under the License. */
 
 import { AgentError, type DesktopAgent } from '@finos/fdc3';
-import { AppDirectory } from '../app-directory';
-import { DefaultResolver } from '../app-directory/app-resolver.default';
-import { ChannelFactory } from '../channel';
+import { DefaultResolver } from '../app-directory/app-resolver.default.js';
+import { AppDirectory } from '../app-directory/index.js';
+import { ChannelFactory } from '../channel/index.js';
 import {
     IRootMessagingProvider,
     MessagingProviderFactory,
     ProxyDesktopAgentFactoryParams,
     RootDesktopAgentFactoryParams,
-} from '../contracts';
-import { createLogger, getWindow } from '../helpers';
-import { RootMessagePublisher } from '../messaging';
-import { DefaultRootMessagingProvider } from '../messaging-provider';
-import { DesktopAgentImpl } from './desktop-agent';
-import { DesktopAgentProxy } from './desktop-agent-proxy';
+} from '../contracts.js';
+import { createLogger, getWindow } from '../helpers/index.js';
+import { RootMessagePublisher } from '../messaging/index.js';
+import { DefaultRootMessagingProvider } from '../messaging-provider/index.js';
+import { DesktopAgentImpl } from './desktop-agent.js';
+import { DesktopAgentProxy } from './desktop-agent-proxy.js';
 
 /**
  * A factory to create an instance of DesktopAgent

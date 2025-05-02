@@ -25,15 +25,15 @@ import {
     IRootMessagingProvider,
     MessagingProviderFactory,
     UIProviderFactory,
-} from '../contracts';
-import * as helpersImport from '../helpers';
-import { RootMessagePublisher } from '../messaging';
-import { DesktopAgentImpl } from './desktop-agent';
-import { DesktopAgentFactory } from './desktop-agent.factory';
-import { DesktopAgentProxy } from './desktop-agent-proxy';
+} from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { RootMessagePublisher } from '../messaging/index.js';
+import { DesktopAgentFactory } from './desktop-agent.factory.js';
+import { DesktopAgentImpl } from './desktop-agent.js';
+import { DesktopAgentProxy } from './desktop-agent-proxy.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

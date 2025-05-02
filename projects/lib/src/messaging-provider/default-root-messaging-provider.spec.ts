@@ -19,12 +19,12 @@ import {
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IncomingMessageCallback, IRootIncomingMessageEnvelope, IRootOutgoingMessageEnvelope } from '../contracts';
-import * as helpersImport from '../helpers';
-import { DefaultRootMessagingProvider } from './default-root-messaging-provider';
+import { IncomingMessageCallback, IRootIncomingMessageEnvelope, IRootOutgoingMessageEnvelope } from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { DefaultRootMessagingProvider } from './default-root-messaging-provider.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

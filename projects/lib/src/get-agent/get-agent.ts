@@ -9,9 +9,9 @@
  * and limitations under the License. */
 
 import { AgentError, BrowserTypes, DesktopAgent, GetAgentParams, GetAgentType } from '@finos/fdc3';
-import { DesktopAgentFactory } from '../agent';
-import { DEFAULT_AGENT_DISCOVERY_TIMEOUT, FDC3_READY_EVENT } from '../constants';
-import { IProxyMessagingProvider } from '../contracts';
+import { DesktopAgentFactory } from '../agent/index.js';
+import { DEFAULT_AGENT_DISCOVERY_TIMEOUT, FDC3_READY_EVENT } from '../constants.js';
+import { IProxyMessagingProvider } from '../contracts.js';
 import {
     createLogger,
     discoverProxyCandidates,
@@ -19,8 +19,8 @@ import {
     generateValidateIdentityMessage,
     isWCPHandshake,
     isWCPSuccessResponse,
-} from '../helpers';
-import { DefaultProxyMessagingProvider } from '../messaging-provider';
+} from '../helpers/index.js';
+import { DefaultProxyMessagingProvider } from '../messaging-provider/index.js';
 
 const log = createLogger('GetAgent');
 

@@ -9,8 +9,8 @@
  * and limitations under the License. */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApplicationHostManifests } from '../app-directory.contracts';
-import { getHostManifest } from './get-host-manifest.helper';
+import { ApplicationHostManifests } from '../app-directory.contracts.js';
+import { getHostManifest } from './get-host-manifest.helper.js';
 
 describe('getHostManifest', () => {
     let originalFetch: typeof global.fetch;

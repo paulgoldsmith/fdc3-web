@@ -11,9 +11,14 @@
 import { AgentError, DesktopAgent } from '@finos/fdc3';
 import { Mock } from '@morgan-stanley/ts-mocking-bird';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FDC3_READY_EVENT } from '../constants';
-import { discoverProxyCandidates, generateHelloMessage, isWCPHandshake, isWCPSuccessResponse } from '../helpers';
-import { getAgent, resetCachedPromise } from './get-agent';
+import { FDC3_READY_EVENT } from '../constants.js';
+import {
+    discoverProxyCandidates,
+    generateHelloMessage,
+    isWCPHandshake,
+    isWCPSuccessResponse,
+} from '../helpers/index.js';
+import { getAgent, resetCachedPromise } from './get-agent.js';
 
 describe('getAgent', () => {
     // Mock agent to be used in tests

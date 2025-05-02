@@ -10,11 +10,11 @@
 
 import { Mock, proxyModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { decodeUUUrl, generateUUUrl } from './url-helper';
-import * as helpersImport from './uuid.helper';
+import { decodeUUUrl, generateUUUrl } from './url-helper.js';
+import * as helpersImport from './uuid.helper.js';
 
-vi.mock('./uuid.helper', async () => {
-    const actual = await vi.importActual('./uuid.helper');
+vi.mock('./uuid.helper.js', async () => {
+    const actual = await vi.importActual('./uuid.helper.js');
     return proxyModule(actual);
 });
 

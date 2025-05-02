@@ -17,8 +17,8 @@ import {
     Message,
     RequestMessage,
     ResponseMessage,
-} from '../contracts';
-import { generateUUID } from '../helpers';
+} from '../contracts.js';
+import { generateUUID } from '../helpers/index.js';
 
 /**
  * Base class for anything that needs to send and receive request and response messages

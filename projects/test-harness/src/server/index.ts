@@ -8,15 +8,18 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-const configFileName = process.env.APP_DIRECTORY_CONFIG_FILE_PATH ?? './src/test-harness.config.json';
+const configFileName = process.env.APP_DIRECTORY_CONFIG_FILE_PATH ?? './assets/test-harness.config.json';
 
-const path = require('path');
-const express = require('express');
-const cors = require('cors');
+import cors from 'cors';
+import express from 'express';
+import { Express } from 'express-serve-static-core';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 //can swap in different config files
-const config = require(configFileName);
+const { default: config } = await import(configFileName, { with: { type: 'json' } });
 
+const rootPort = 4200;
 const basePort = 4300;
 
 /**
@@ -24,39 +27,51 @@ const basePort = 4300;
  * @param {string} folder - The path to the folder containing static files to serve.
  * @param {number} port - The port number on which the server will listen.
  */
-function createServer(domain, folder, port) {
-    const app = express();
-    const folderPath = path.resolve(__dirname, folder);
+function createServer(domain: string, port: number, serveStatic: boolean = false): Express {
+    const app: Express = express();
+    let folderPath: string | undefined = undefined;
+
     //allows all origins to access server resources
-    //TODO: add mapping from root domain to default apps folder to server default app from root domain as well as from secondary domains
-    app.use(cors(), express.static(folderPath));
-    app.listen(port, () =>
-        console.log(`${domain} Server serving '${folderPath}' running at http://localhost:${port}`),
-    ).on('error', err => console.error(`Failed to start ${domain} Server on port ${port}:`, err));
+    app.use(cors());
+
+    if (serveStatic) {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+
+        folderPath = resolve(__dirname, '../ui');
+        app.use(express.static(folderPath));
+    }
+
+    app.listen(port, () => {
+        const servingFolder = folderPath ? `serving '${folderPath}' ` : '';
+        console.log(`${domain} Server ${servingFolder}running at http://localhost:${port}`);
+    }).on('error', err => console.error(`Failed to start ${domain} Server on port ${port}:`, err));
     return app;
 }
 
-if (configFileName === './src/test-harness.config.json') {
+if (configFileName.includes('test-harness.config.json')) {
+    console.log(`Starting servers for test harness applications...`);
+
     const domains = Array.from(
         new Set([
-            'root',
             ...config.applications
-                .map(app => app.appId.substring(app.appId.indexOf('-', 4) + 1))
-                .filter(domain => domain),
+                .filter((application: any) => application.details.url.includes('localhost'))
+                .map((app: any) => app.appId.substring(app.appId.indexOf('-', 4) + 1))
+                .filter((domain: string) => domain !== 'root'),
         ]),
     );
 
     // Create servers for each domain
     let currentPort = basePort;
-    domains.forEach(domain => createServer(domain, `build`, currentPort++));
+    domains.forEach(domain => createServer(domain, currentPort++, true));
 }
 
-console.log(`\n\nFDC3 Test Harness url: http://localhost:${basePort}/root-app.html\n`);
+console.log(`\n\nFDC3 Test Harness url: http://localhost:${rootPort}/index.html\n`);
 
 // Setup mock app-directory server
 
 const appDirectoryPort = 4299;
-const app = createServer('app-directory', `dist/app-directory`, appDirectoryPort);
+const app = createServer('app-directory', appDirectoryPort);
 console.log(`\n\nMock App Directory Service base url: http://localhost:${appDirectoryPort}`);
 
 // Routing for app-directory service
@@ -66,7 +81,7 @@ const rootApp = {
     title: 'Root App',
     type: 'web',
     details: {
-        url: `http://localhost:${basePort}/root-app.html`,
+        url: `http://localhost:${rootPort}/index.html`,
     },
 };
 

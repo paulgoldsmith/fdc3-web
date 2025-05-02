@@ -29,8 +29,9 @@ import {
     Listener,
     PrivateChannel,
 } from '@finos/fdc3';
-import { ChannelFactory, Channels } from '../channel';
-import { FullyQualifiedAppIdentifier, IProxyMessagingProvider } from '../contracts';
+import { ChannelFactory, Channels } from '../channel/index.js';
+import { FullyQualifiedAppIdentifier, IProxyMessagingProvider } from '../contracts.js';
+import { convertToFDC3EventTypes } from '../helpers/event-type.helper.js';
 import {
     createRequestMessage,
     isAddEventListenerResponse,
@@ -54,9 +55,8 @@ import {
     isRaiseIntentResultResponse,
     resolveAppIdentifier,
     resolveContextType,
-} from '../helpers';
-import { convertToFDC3EventTypes } from '../helpers/event-type.helper';
-import { MessagingBase } from '../messaging';
+} from '../helpers/index.js';
+import { MessagingBase } from '../messaging/index.js';
 
 type ProxyDesktopAgentParams = {
     appIdentifier: FullyQualifiedAppIdentifier;

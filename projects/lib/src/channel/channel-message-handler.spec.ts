@@ -18,21 +18,21 @@ import {
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { HEARTBEAT } from '../constants';
+import { HEARTBEAT } from '../constants.js';
+import { IRootPublisher } from '../contracts.internal.js';
 import {
     EventListenerLookup,
     EventMessage,
     FullyQualifiedAppIdentifier,
     IProxyMessagingProvider,
     ResponseMessage,
-} from '../contracts';
-import { IRootPublisher } from '../contracts.internal';
-import * as helpersImport from '../helpers';
-import { ChannelMessageHandler } from './channel-message-handler';
-import { recommendedChannels } from './default-channels';
+} from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { ChannelMessageHandler } from './channel-message-handler.js';
+import { recommendedChannels } from './default-channels.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

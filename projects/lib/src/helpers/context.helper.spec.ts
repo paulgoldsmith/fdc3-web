@@ -10,7 +10,7 @@
 
 import { ContextHandler } from '@finos/fdc3';
 import { describe, expect, it } from 'vitest';
-import { resolveContextType } from './context.helper';
+import { resolveContextType } from './context.helper.js';
 
 describe('context.helper', () => {
     describe('resolveContextType', () => {

@@ -109,17 +109,31 @@ For most development running `npm start` will be sufficient to test implementati
 
 ## Commands
 
-```typescript
+```bash
 
-npm ci // Clean install all package dependencies
+# Clean install all package dependencies
+npm ci
 
-npm run build // Run a simple build
+# build all projects
+npm run build
 
-npm run test // Run tests on the command line
+# Test all projects
+npm run test
 
-npm run lint // Checks the code for lint errors
+# Checks the code for lint errors
+npm run lint 
 
-npm run build-release // Run a full build (Compile, Tests, Lint)
+# Run a full build (Compile, Tests, Lint)
+npm run build-release
+
+# test a single project
+npx nx test fdc3-web 
+
+# test a single project in watch mode
+npx nx test fdc3-web --watch
+
+# watch tests across all projects
+npm run test:watch
 
 ```
 ## Development setup

@@ -19,7 +19,7 @@ import type {
     Intent,
     PrivateChannelEvent,
 } from '@finos/fdc3';
-import { AppDirectoryApplication } from './app-directory.contracts';
+import { AppDirectoryApplication } from './app-directory.contracts.js';
 
 export type RequestMessage =
     | BrowserTypes.AddContextListenerRequest

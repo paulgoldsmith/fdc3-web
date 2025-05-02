@@ -9,11 +9,11 @@
  * and limitations under the License. */
 
 import { BrowserTypes } from '@finos/fdc3';
-import { FDC3_VERSION } from '../constants';
-import { FullyQualifiedAppIdentifier, RequestMessage } from '../contracts';
-import { isWCPHelloMessage } from './finos-type-predicate.helper';
-import { getTimestamp } from './timestamp.helper';
-import { generateUUID } from './uuid.helper';
+import { FDC3_VERSION } from '../constants.js';
+import { FullyQualifiedAppIdentifier, RequestMessage } from '../contracts.js';
+import { isWCPHelloMessage } from './finos-type-predicate.helper.js';
+import { getTimestamp } from './timestamp.helper.js';
+import { generateUUID } from './uuid.helper.js';
 
 type PartialRequestMessage<T extends BrowserTypes.AppRequestMessage> = {
     type: T['type'];

@@ -9,11 +9,12 @@
  * and limitations under the License. */
 
 import { BrowserTypes, DesktopAgent, ImplementationMetadata, Intent, OpenError, ResolveError } from '@finos/fdc3';
-import { AppDirectory } from '../app-directory';
-import { AppDirectoryApplication } from '../app-directory.contracts';
-import { ChannelFactory } from '../channel';
-import { ChannelMessageHandler } from '../channel/channel-message-handler';
-import { HEARTBEAT } from '../constants';
+import { AppDirectoryApplication } from '../app-directory.contracts.js';
+import { AppDirectory } from '../app-directory/index.js';
+import { ChannelMessageHandler } from '../channel/channel-message-handler.js';
+import { ChannelFactory } from '../channel/index.js';
+import { HEARTBEAT } from '../constants.js';
+import { IRootPublisher } from '../contracts.internal.js';
 import {
     AppIdentifierListenerPair,
     EventListenerKey,
@@ -21,8 +22,7 @@ import {
     FullyQualifiedAppIdentifier,
     IOpenApplicationStrategy,
     RequestMessage,
-} from '../contracts';
-import { IRootPublisher } from '../contracts.internal';
+} from '../contracts.js';
 import {
     appInstanceEquals,
     convertToEventListenerIndex,
@@ -39,10 +39,10 @@ import {
     isFullyQualifiedAppIdentifier,
     isOpenError,
     isResponsePayloadError,
-} from '../helpers';
-import { RootMessagePublisher } from '../messaging';
-import { DesktopAgentProxy } from './desktop-agent-proxy';
-import { FallbackOpenStrategy } from './fallback-open-strategy';
+} from '../helpers/index.js';
+import { RootMessagePublisher } from '../messaging/index.js';
+import { DesktopAgentProxy } from './desktop-agent-proxy.js';
+import { FallbackOpenStrategy } from './fallback-open-strategy.js';
 
 const log = createLogger('DesktopAgent');
 
