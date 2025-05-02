@@ -10,8 +10,15 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "npx typedoc {projectRoot}/src/index.ts --out docs/{projectName} --options typedoc.json --tsconfig {projectRoot}/tsconfig.lib.json"
-            }
+            },
+            "dependsOn": []
         },
-        "dependsOn": []
+        "type-check-specs": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+            },
+            "dependsOn": []
+        }
     }
 }

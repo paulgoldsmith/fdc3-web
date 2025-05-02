@@ -9,7 +9,7 @@
  * and limitations under the License. */
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { IframeRelay } from './iframe-messaging-provider-relay';
+import { IframeRelay } from './iframe-messaging-provider-relay.js';
 
 const mockedChannelId = 'mocked-channel-id';
 

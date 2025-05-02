@@ -8,9 +8,9 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { IframeMessagingProvider } from './iframe-messaging-provider';
-import { iframeMessagingProviderFactory } from './iframe-messaging-provider-factory';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { IframeMessagingProvider } from './iframe-messaging-provider.js';
+import { iframeMessagingProviderFactory } from './iframe-messaging-provider-factory.js';
 
 describe('iframeMessagingProviderFactory', () => {
     beforeAll(() => {

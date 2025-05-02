@@ -11,7 +11,7 @@
 import { Channel, DesktopAgent, EventHandler, FDC3ChannelChangedEvent, Listener } from '@finos/fdc3';
 import { IMocked, Mock, setupFunction, setupProperty } from '@morgan-stanley/ts-mocking-bird';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ChannelSelectorComponent } from './channel-selector.component';
+import { ChannelSelectorComponent } from './channel-selector.component.js';
 
 const mockedChannelId = 'channel-two';
 

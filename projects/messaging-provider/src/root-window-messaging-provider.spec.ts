@@ -14,16 +14,8 @@ import {
     IRootIncomingMessageEnvelope,
     IRootOutgoingMessageEnvelope,
 } from '@morgan-stanley/fdc3-web';
-import {
-    defineProperty,
-    IMocked,
-    Mock,
-    registerMock,
-    reset,
-    setupFunction,
-    setupProperty,
-} from '@morgan-stanley/ts-mocking-bird';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { defineProperty, IMocked, Mock, setupFunction, setupProperty } from '@morgan-stanley/ts-mocking-bird';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RootWindowMessagingProvider } from './root-window-messaging-provider.js';
 
 const channelOne = 'channelOne';

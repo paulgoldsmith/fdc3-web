@@ -17,8 +17,8 @@ import {
     reset,
     setupFunction,
 } from '@morgan-stanley/ts-mocking-bird';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AppDirectory } from '../app-directory';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AppDirectory } from '../app-directory/index.js';
 import {
     FullyQualifiedAppIdentifier,
     IProxyMessagingProvider,

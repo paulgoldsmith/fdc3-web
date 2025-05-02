@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { getWindow } from './window.helper.js';
 
 describe(`${getWindow} (window.helper)`, () => {
