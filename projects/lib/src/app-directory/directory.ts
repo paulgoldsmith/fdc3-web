@@ -211,11 +211,8 @@ export class AppDirectory {
 
         log('Resolving App Identity', 'debug', identityUrl);
 
-        /**
-         * This is a very simple check for now that just looks for a matching url.
-         * We will need to do more complex checks in here to handle urls that do not exactly match the identity url (for example due to url parameters)
-         */
-        const matchingApp = Object.values(this.directory)
+        // First try to find an exact URL match
+        let matchingApp = Object.values(this.directory)
             .map(record => record?.application)
             .filter(application => application != null)
             .find(
@@ -226,8 +223,28 @@ export class AppDirectory {
             return matchingApp;
         }
 
-        log('No App Identity found', 'error', identityUrl, this.directory);
+        // If no exact match, try to match by partial qualification
+        // Extract the base path from identityUrl to match against
+        const identityUrlObj = new URL(identityUrl);
+        const identityBasePath = identityUrlObj.pathname.split('/').filter(Boolean)[0];
 
+        matchingApp = Object.values(this.directory)
+            .map(record => record?.application)
+            .filter(application => application != null)
+            .find(application => {
+                if (!isWebAppDetails(application.details)) {
+                    return false;
+                }
+                const appUrl = new URL(application.details.url);
+                const appBasePath = appUrl.pathname.split('/').filter(Boolean)[0];
+                return appBasePath === identityBasePath && appUrl.host === identityUrlObj.host;
+            });
+
+        if (matchingApp != null) {
+            return matchingApp;
+        }
+
+        log('No App Identity found', 'error', identityUrl, this.directory);
         return undefined;
     }
 
@@ -278,15 +295,52 @@ export class AppDirectory {
      * Returns fullyQualifiedAppId if appId passed is in format 'appId@hostname' or no app directory is currently loaded, and undefined otherwise
      */
     private getFullyQualifiedAppId(appId?: string): FullyQualifiedAppId | undefined {
-        if (isFullyQualifiedAppId(appId)) {
-            //return fullyQualifiedAppId
-            return appId;
+        if (!appId) {
+            return undefined;
         }
+
+        // If already fully qualified, try exact match first
+        if (isFullyQualifiedAppId(appId)) {
+            // If it exists in our directory, return it
+            if (this.directory[appId]) {
+                return appId;
+            }
+            // If not found, try to match the unqualified portion against known unqualified appIds
+            const [unqualifiedPart] = appId.split('@');
+            const matches = Object.keys(this.directory).filter(qualifiedId => {
+                const [baseAppId] = qualifiedId.split('@');
+                return baseAppId === unqualifiedPart;
+            });
+            // Return first match if any found
+            if (matches.length > 0) {
+                return matches[0] as FullyQualifiedAppId;
+            }
+        } else {
+            // For unqualified appId, try to match against unqualified portions of known fully-qualified appIds
+            const matches = Object.keys(this.directory).filter(qualifiedId => {
+                const [baseAppId] = qualifiedId.split('@');
+                return baseAppId === appId;
+            });
+
+            if (matches.length === 1) {
+                // If single match found, return it
+                return matches[0] as FullyQualifiedAppId;
+            } else if (matches.length > 0) {
+                // If multiple matches, we should ideally show a resolver UI
+                // For now, we'll take the first match but TODO: implement proper resolution
+                // as specified in the FDC3 spec
+                log('Multiple matches found for unqualified appId, using first match', 'warn', { appId, matches });
+                return matches[0] as FullyQualifiedAppId;
+            }
+        }
+
+        // If no app directory is loaded, create fullyQualifiedAppId using default hostname string
         if (this.appDirectoryUrls.length === 0 && appId != null) {
-            //if no app directory is loaded, create fullyQualifiedAppId using default hostname string
             return `${appId}@${unknownAppDirectory}`;
         }
-        return;
+
+        // If we reach here, we couldn't find a match
+        return undefined;
     }
 
     /**
