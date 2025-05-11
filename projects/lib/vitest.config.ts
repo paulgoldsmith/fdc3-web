@@ -19,7 +19,7 @@ export default defineConfig({
                 '**/docs/**',
             ],
         },
-        reporters: ['default', ['html', { outputFile: '../../build/test-results/lib/report.html' }]],
+        reporters: ['default'],
         globals: true,
         environment: 'jsdom',
     },

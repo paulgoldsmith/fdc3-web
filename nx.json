@@ -48,6 +48,14 @@
                 "serveTargetName": "webpack:serve",
                 "previewTargetName": "preview"
             }
+        },
+        {
+            "plugin": "@nx/vite/plugin",
+            "options": {
+                "buildTargetName": "build",
+                "previewTargetName": "preview",
+                "testTargetName": "test"
+            }
         }
     ]
 }

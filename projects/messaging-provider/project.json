@@ -38,9 +38,24 @@
             }
         },
         "test": {
-            "executor": "nx:run-commands",
+            "executor": "@nx/vite:test",
             "options": {
-                "command": "vitest run --coverage"
+                "passWithNoTests": true,
+                "reportsDirectory": "../../build/coverage-results/messaging-provider",
+                "coverage": true,
+                "config": "projects/messaging-provider/vitest.config.ts"
+            }
+        },
+        "test-watch": {
+            "executor": "@nx/vite:test",
+            "options": {
+                "watch": true
+            }
+        },
+        "test-ui": {
+            "executor": "@nx/vite:test",
+            "options": {
+                "ui": true
             }
         }
     }
