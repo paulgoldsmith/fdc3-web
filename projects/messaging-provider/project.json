@@ -6,7 +6,7 @@
         "build:relay": {
             "executor": "@nx/webpack:webpack",
             "options": {
-                "webpackConfig": "{projectRoot}/webpack.config.js",
+                "webpackConfig": "{projectRoot}/webpack.config.ts",
                 "outputPath": "{projectRoot}/dist/",
                 "rootDir": "{projectRoot}"
             }
