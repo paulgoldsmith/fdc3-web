@@ -6,6 +6,7 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text', 'lcov'],
             reportsDirectory: '../../build/coverage-results/messaging-provider',
+            include: ['src/**/*.{ts,tsx}'],
             exclude: [
                 '**/dist/**',
                 '**/node_modules/**',
