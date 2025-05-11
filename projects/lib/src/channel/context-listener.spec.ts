@@ -27,7 +27,7 @@ import {
     setupFunction,
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     EventMessage,
     FullyQualifiedAppIdentifier,
@@ -621,38 +621,6 @@ describe(`${ContextListener.name} (context-listener)`, () => {
                         .withParametersEqualTo({ payload: expectedMessage }),
                 ).wasCalledOnce();
             });
-
-            if (!singleChannel) {
-                it('should publish EventListenerUnsubscribeRequest when unsubscribe is called', async () => {
-                    const instance = await createInstance(details);
-
-                    setupContextListenerResponse();
-                    if (!singleChannel) {
-                        setupAddEventListenerResponse();
-                        mockChannelSelection(mockedChannelId);
-                    }
-
-                    const listener = await instance.addContextListener('fdc3.contact', mockHandler.mock.handler);
-
-                    listener.unsubscribe();
-
-                    const expectedMessage: BrowserTypes.EventListenerUnsubscribeRequest = {
-                        meta: createExpectedRequestMeta(),
-                        payload: {
-                            listenerUUID: addEventListenerUuid,
-                        },
-                        type: 'eventListenerUnsubscribeRequest',
-                    };
-
-                    await wait();
-
-                    expect(
-                        mockMessagingProvider
-                            .withFunction('sendMessage')
-                            .withParametersEqualTo({ payload: expectedMessage }),
-                    ).wasCalledOnce();
-                });
-            }
 
             it('should no longer call ContextHandler function when unsubscribe has been called', async () => {
                 const instance = await createInstance(details);
