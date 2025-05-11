@@ -18,6 +18,7 @@ export default defineConfig({
                 '**/docs/**',
             ],
         },
+        reporters: ['default', ['html', { outputFile: '../../build/test-results/messaging-provider/report.html' }]],
         globals: true,
         environment: 'jsdom',
     },

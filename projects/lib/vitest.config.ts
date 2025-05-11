@@ -7,6 +7,7 @@ export default defineConfig({
             reporter: ['text', 'lcov'],
             reportsDirectory: '../../build/coverage-results/lib',
         },
+        reporters: ['default', ['html', { outputFile: '../../build/test-results/lib/report.html' }]],
         globals: true,
         environment: 'jsdom',
     },
