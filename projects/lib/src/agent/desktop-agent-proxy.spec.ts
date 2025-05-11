@@ -29,12 +29,13 @@ import { OpenError, ResolveError } from '@finos/fdc3';
 import {
     IMocked,
     Mock,
-    proxyJestModule,
+    proxyModule,
     registerMock,
     setupFunction,
     setupProperty,
     toBe,
 } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppDirectory } from '../app-directory';
 import { ChannelFactory, Channels } from '../channel';
 import { ChannelMessageHandler } from '../channel/channel-message-handler';
@@ -50,7 +51,10 @@ import { RootMessagePublisher } from '../messaging/';
 import { DesktopAgentImpl } from './desktop-agent';
 import { DesktopAgentProxy } from './desktop-agent-proxy';
 
-jest.mock('../helpers', () => proxyJestModule(require.resolve('../helpers')));
+vi.mock('../helpers', async () => {
+    const actual = await vi.importActual('../helpers');
+    return proxyModule(actual);
+});
 
 const mockedAppId = `mocked-app-id`;
 const mockedInstanceId = `mocked-instance-id`;

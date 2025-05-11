@@ -12,11 +12,12 @@ import { BrowserTypes } from '@finos/fdc3';
 import {
     IMocked,
     Mock,
-    proxyJestModule,
+    proxyModule,
     registerMock,
     setupFunction,
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppDirectory } from '../app-directory';
 import { AppDirectoryApplication } from '../app-directory.contracts';
 import { FDC3_PROVIDER, FDC3_VERSION } from '../constants';
@@ -30,7 +31,10 @@ import {
 import * as helpersImport from '../helpers';
 import { RootMessagePublisher } from './root-message-publisher';
 
-jest.mock('../helpers', () => proxyJestModule(require.resolve('../helpers')));
+vi.mock('../helpers', async () => {
+    const actual = await vi.importActual('../helpers');
+    return proxyModule(actual);
+});
 
 const mockedDate = new Date(2024, 1, 0, 0, 0, 0);
 const mockedRootGeneratedUuid = `mocked-root-generated-Uuid`;
@@ -223,7 +227,7 @@ describe('RootMessagePublisher', () => {
         it('should log an error if channelId cannot be resolved for unknown source app', async () => {
             const instance = createInstance();
             await instance.initialise();
-            const consoleError = jest.spyOn(console, 'error').mockImplementation();
+            const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {
                 appId: sourceAppId,
@@ -243,7 +247,7 @@ describe('RootMessagePublisher', () => {
             await instance.initialise();
 
             // Mock console.error
-            const consoleError = jest.spyOn(console, 'error').mockImplementation();
+            const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
             // Create a request message
             const requestMessage: BrowserTypes.GetInfoRequest = {
@@ -365,7 +369,7 @@ describe('RootMessagePublisher', () => {
         it('should log an error if channelId cannot be resolved for unknown source app', async () => {
             const instance = createInstance();
             await instance.initialise();
-            const consoleError = jest.spyOn(console, 'error').mockImplementation();
+            const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {
                 appId: sourceAppId,

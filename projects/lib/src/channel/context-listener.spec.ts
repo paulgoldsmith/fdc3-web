@@ -22,11 +22,12 @@ import { ChannelError } from '@finos/fdc3';
 import {
     IMocked,
     Mock,
-    proxyJestModule,
+    proxyModule,
     registerMock,
     setupFunction,
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import {
     EventMessage,
     FullyQualifiedAppIdentifier,
@@ -45,7 +46,10 @@ import * as helpersImport from '../helpers';
 import { ChannelFactory } from './channels.factory';
 import { ContextListener } from './context-listener';
 
-jest.mock('../helpers', () => proxyJestModule(require.resolve('../helpers')));
+vi.mock('../helpers', async () => {
+    const actual = await vi.importActual('../helpers');
+    return proxyModule(actual);
+});
 
 const mockedAppId = `mocked-app-id`;
 const mockedInstanceId = `mocked-instance-id`;
@@ -619,7 +623,7 @@ describe(`${ContextListener.name} (context-listener)`, () => {
             });
 
             if (!singleChannel) {
-                xit('should publish RemoveEventListenerRequest when unsubscribe is called', async () => {
+                test.skip('should publish RemoveEventListenerRequest when unsubscribe is called', async () => {
                     const instance = await createInstance(details);
 
                     setupContextListenerResponse();
@@ -731,7 +735,7 @@ describe(`${ContextListener.name} (context-listener)`, () => {
         it(`should return null if no channelId is set`, async () => {
             const instance = await createInstance();
 
-            expect(instance.getCurrentContext('fdc3.contact')).resolves.toBeNull();
+            await expect(instance.getCurrentContext('fdc3.contact')).resolves.toBeNull();
 
             await wait();
 

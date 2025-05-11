@@ -10,6 +10,7 @@
 
 import { AgentError, DesktopAgent } from '@finos/fdc3';
 import { Mock } from '@morgan-stanley/ts-mocking-bird';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FDC3_READY_EVENT } from '../constants';
 import { getAgent, resetCachedPromise } from './get-agent';
 
@@ -38,13 +39,13 @@ describe('getAgent', () => {
         originalPostMessage = window.postMessage;
 
         // Override addEventListener to track additions
-        window.addEventListener = jest.fn((type, listener) => {
+        window.addEventListener = vi.fn((type, listener) => {
             eventListenersAdded.push({ type, listener });
             return originalAddEventListener.call(window, type, listener);
         });
 
         // Override removeEventListener to track removals
-        window.removeEventListener = jest.fn((type, listener) => {
+        window.removeEventListener = vi.fn((type, listener) => {
             eventListenersRemoved.push({ type, listener });
             return originalRemoveEventListener.call(window, type, listener);
         });
@@ -57,7 +58,7 @@ describe('getAgent', () => {
         window.removeEventListener = originalRemoveEventListener;
         window.postMessage = originalPostMessage;
         resetCachedPromise();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('should return the same promise if called twice', async () => {
@@ -68,7 +69,7 @@ describe('getAgent', () => {
         const secondPromise = getAgent();
 
         // Verify both calls return the same promise
-        // Note: We use toEqual instead of toBe because Jest has issues comparing promises directly
+        // Note: We use toEqual instead of toBe because promises can be hard to compare directly
         expect(firstPromise).toEqual(secondPromise);
 
         // Clean up promises to avoid unhandled rejections
@@ -90,7 +91,7 @@ describe('getAgent', () => {
         expect(result).toBe(mockAgent);
     });
 
-    // Testing the fdc3Ready event behavior is challenging in Jest due to timing issues
+    // Testing the fdc3Ready event behavior is challenging due to timing issues
     // Instead, we'll test the behavior by directly setting window.fdc3 and triggering the event
     it('should return window.fdc3 when available after event', async () => {
         // Setup - ensure window.fdc3 is undefined initially
@@ -122,7 +123,7 @@ describe('getAgent', () => {
 
         // Create a mock failover function
         const fallbackAgent = Mock.create<DesktopAgent>().mock;
-        const mockFailover = jest.fn().mockReturnValue(fallbackAgent);
+        const mockFailover = vi.fn().mockReturnValue(fallbackAgent);
 
         // Act - call getAgent with the failover function
         const result = await getAgent({
@@ -137,7 +138,7 @@ describe('getAgent', () => {
 
     it('should warn if parameters are passed to a subsequent call', async () => {
         // Setup - spy on console.warn
-        const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
         // First call to getAgent
         const firstPromise = getAgent();
@@ -203,7 +204,7 @@ describe('getAgent', () => {
         const mockWindow = new Window();
         (global as any).Window = Window;
 
-        const mockFailover = jest.fn().mockResolvedValue(mockWindow);
+        const mockFailover = vi.fn().mockResolvedValue(mockWindow);
 
         // Create a promise to hold the getAgent call
         const agentPromise = getAgent({
@@ -228,7 +229,7 @@ describe('getAgent', () => {
 
         // Create a mock failover function that throws an error
         const mockError = new Error('Failover function error');
-        const mockFailover = jest.fn().mockRejectedValue(mockError);
+        const mockFailover = vi.fn().mockRejectedValue(mockError);
 
         // Act & Assert - verify getAgent rejects with the error from failover
         await expect(
@@ -249,7 +250,7 @@ describe('getAgent', () => {
 
         // Create a mock agent and failover function
         const fallbackAgent = Mock.create<DesktopAgent>().mock;
-        const mockFailover = jest.fn().mockReturnValue(fallbackAgent);
+        const mockFailover = vi.fn().mockReturnValue(fallbackAgent);
 
         // Define the identity URL to test
         const testIdentityUrl = 'https://test-identity-url.com';
@@ -285,7 +286,7 @@ describe('getAgent', () => {
 
         // Mock the addEventListener to capture the fdc3Ready event handler
         let capturedEventHandler: (() => void) | undefined;
-        const mockAddEventListener = jest.fn((eventType, handler) => {
+        const mockAddEventListener = vi.fn((eventType, handler) => {
             if (eventType === FDC3_READY_EVENT) {
                 capturedEventHandler = handler as () => void;
             }

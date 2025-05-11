@@ -24,6 +24,7 @@
         "useDefineForClassFields": false,
         "emitDecoratorMetadata": true,
         "inlineSources": true,
+        "resolveJsonModule": true,
         "paths": {
             "@morgan-stanley/fdc3-web": ["projects/lib/dist/"],
             "@morgan-stanley/fdc3-web-messaging-provider": ["projects/messaging-provider/dist/"],

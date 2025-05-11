@@ -9,14 +9,21 @@
  * and limitations under the License. */
 
 import { BrowserTypes } from '@finos/fdc3';
-import { IMocked, Mock, proxyJestModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
+import { IMocked, Mock, proxyModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FullyQualifiedAppIdentifier, RequestMessage } from '../contracts';
 import { createEvent, createRequestMessage, createResponseMessage } from './messages.helper';
 import * as timestampImport from './timestamp.helper';
 import * as uuidImport from './uuid.helper';
 
-jest.mock('./uuid.helper', () => proxyJestModule(require.resolve('./uuid.helper')));
-jest.mock('./timestamp.helper', () => proxyJestModule(require.resolve('./timestamp.helper')));
+vi.mock('./uuid.helper', async () => {
+    const actual = await vi.importActual('./uuid.helper');
+    return proxyModule(actual);
+});
+vi.mock('./timestamp.helper', async () => {
+    const actual = await vi.importActual('./timestamp.helper');
+    return proxyModule(actual);
+});
 
 type NonOptionalMessage<
     T extends BrowserTypes.AppRequestMessage | BrowserTypes.AgentResponseMessage | BrowserTypes.AgentEventMessage,
