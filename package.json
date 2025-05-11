@@ -8,7 +8,7 @@
         "lint-fix": "nx run-many -t lint-fix --excludeTaskDependencies",
         "lint": "nx run-many -t lint --excludeTaskDependencies",
         "build": "nx run-many -t build",
-        "test": "nx run-many -t test --excludeTaskDependencies --parallel=1",
+        "test": "nx test --coverage --watch=false",
         "start": "nx run-many -t start  --excludeTaskDependencies",
         "generate-docs": "nx run-many -t generate-docs",
         "prebuild-release": "npm run clean",
