@@ -623,7 +623,7 @@ describe(`${ContextListener.name} (context-listener)`, () => {
             });
 
             if (!singleChannel) {
-                test.skip('should publish RemoveEventListenerRequest when unsubscribe is called', async () => {
+                it('should publish EventListenerUnsubscribeRequest when unsubscribe is called', async () => {
                     const instance = await createInstance(details);
 
                     setupContextListenerResponse();
@@ -636,13 +636,12 @@ describe(`${ContextListener.name} (context-listener)`, () => {
 
                     listener.unsubscribe();
 
-                    // It seems that the RemoveEventListenerRequest that we should be expecting here is not defined yet
-                    const expectedMessage: BrowserTypes.ContextListenerUnsubscribeRequest = {
+                    const expectedMessage: BrowserTypes.EventListenerUnsubscribeRequest = {
                         meta: createExpectedRequestMeta(),
                         payload: {
-                            listenerUUID: contextListenerUuid,
+                            listenerUUID: addEventListenerUuid,
                         },
-                        type: 'contextListenerUnsubscribeRequest',
+                        type: 'eventListenerUnsubscribeRequest',
                     };
 
                     await wait();
