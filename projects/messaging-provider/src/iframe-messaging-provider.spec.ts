@@ -560,4 +560,94 @@ describe('IframeMessagingProvider', () => {
 
         return initPromise; // Return the promise to allow test to verify rejection
     });
+
+    it('should handle ack message with mismatched nonce', () => {
+        // Start initialization
+        provider.initializeRelay();
+
+        // Get the message listener
+        const messageListenerCall = (mockWindow.addEventListener as Mock).mock.calls.find(
+            (call: string[]) => call[0] === 'message',
+        );
+        const messageListener = messageListenerCall ? messageListenerCall[1] : null;
+        expect(messageListener).toBeTruthy();
+
+        // Create an ack message with wrong nonce
+        const invalidNonceEvent = {
+            data: {
+                type: 'ack',
+                nonce: 'wrong-nonce', // Different than the mocked-uuid
+                url: 'https://example.com',
+            },
+        };
+
+        // Reset error log mock to clearly track this specific error
+        (mockConsole.error as Mock).mockClear();
+
+        // Trigger the message handler with the invalid nonce event
+        messageListener!(invalidNonceEvent as unknown as MessageEvent);
+
+        // Verify error was logged
+        expect(mockConsole.error).toHaveBeenCalledWith('Invalid nonce received from parent window');
+    });
+
+    it('should initialize desktop agent proxy child window listener', () => {
+        // Start initialization to trigger the initial setup
+        provider.initializeRelay();
+
+        // Get the first message listener (for parent handshake)
+        const firstMessageListenerCall = (mockWindow.addEventListener as Mock).mock.calls.find(
+            (call: string[]) => call[0] === 'message',
+        );
+        const firstMessageListener = firstMessageListenerCall ? firstMessageListenerCall[1] : null;
+
+        // Reset the addEventListener mock to track the second listener
+        (mockWindow.addEventListener as Mock).mockClear();
+
+        // Trigger the parent handshake to initialize the second listener
+        firstMessageListener!({
+            data: {
+                type: 'ack',
+                nonce: 'mocked-uuid',
+                url: 'https://example.com',
+            },
+            origin: 'https://example.com',
+        } as unknown as MessageEvent);
+
+        // Verify a second message listener was added
+        expect(mockWindow.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
+
+        // Get the second message listener (for child window)
+        const secondMessageListenerCall = (mockWindow.addEventListener as Mock).mock.calls.find(
+            (call: string[]) => call[0] === 'message',
+        );
+        const secondMessageListener = secondMessageListenerCall ? secondMessageListenerCall[1] : null;
+        expect(secondMessageListener).toBeTruthy();
+
+        // Mock event source with postMessage method
+        const mockSource = { postMessage: vi.fn() };
+
+        // Create a hello message a child window might send
+        const helloEvent = {
+            data: {
+                type: 'hello',
+                nonce: 'child-nonce',
+            },
+            source: mockSource,
+            origin: 'https://child-app.com',
+        };
+
+        // Trigger the second message listener with the hello event
+        secondMessageListener!(helloEvent as unknown as MessageEvent);
+
+        // Verify the response was sent to the source
+        expect(mockSource.postMessage).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: 'ack',
+                nonce: 'child-nonce',
+                url: 'https://example.com',
+            }),
+            { targetOrigin: 'https://child-app.com' },
+        );
+    });
 });
