@@ -22,12 +22,13 @@ import {
 import {
     IMocked,
     Mock,
-    proxyJestModule,
+    proxyModule,
     registerMock,
     reset,
     setupFunction,
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { peerDependencies } from '../../package.json';
 import { AppDirectory } from '../app-directory';
 import { AppDirectoryApplication } from '../app-directory.contracts';
@@ -46,7 +47,10 @@ import { isFullyQualifiedAppId } from '../helpers';
 import { RootMessagePublisher } from '../messaging';
 import { DesktopAgentImpl } from './desktop-agent';
 
-jest.mock('../helpers', () => proxyJestModule(require.resolve('../helpers')));
+vi.mock('../helpers', async () => {
+    const actual = await vi.importActual('../helpers');
+    return proxyModule(actual);
+});
 
 const mockedRootAppId = `mocked-root-app-id@mock-app-directory`;
 const mockedRootInstanceId = `mocked-root-instance-id`;

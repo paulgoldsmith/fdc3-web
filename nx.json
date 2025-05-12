@@ -42,17 +42,19 @@
             }
         },
         {
-            "plugin": "@nx/jest/plugin",
-            "options": {
-                "targetName": "jest:test"
-            }
-        },
-        {
             "plugin": "@nx/webpack/plugin",
             "options": {
                 "buildTargetName": "webpack:build",
                 "serveTargetName": "webpack:serve",
                 "previewTargetName": "preview"
+            }
+        },
+        {
+            "plugin": "@nx/vite/plugin",
+            "options": {
+                "buildTargetName": "build",
+                "previewTargetName": "preview",
+                "testTargetName": "test"
             }
         }
     ]

@@ -9,7 +9,8 @@
  * and limitations under the License. */
 
 import { type AppIdentifier, type AppIntent, type Contact, type Context, type Intent, ResolveError } from '@finos/fdc3';
-import { IMocked, Mock, proxyJestModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
+import { IMocked, Mock, proxyModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppDirectoryApplication, AppDirectoryApplicationType, WebAppDetails } from '../app-directory.contracts';
 import {
     FullyQualifiedAppIdentifier,
@@ -20,7 +21,10 @@ import {
 import * as helpersImport from '../helpers';
 import { AppDirectory } from './directory';
 
-jest.mock('../helpers', () => proxyJestModule(require.resolve('../helpers')));
+vi.mock('../helpers', async () => {
+    const actual = await vi.importActual('../helpers');
+    return proxyModule(actual);
+});
 
 const mockedAppIdOne = `app-id-one@mock-app-directory`;
 const mockedAppIdTwo = `app-id-two@mock-app-directory`;

@@ -28,6 +28,27 @@
                     }
                 ]
             }
+        },
+        "test": {
+            "executor": "@nx/vite:test",
+            "options": {
+                "passWithNoTests": true,
+                "reportsDirectory": "../../build/coverage-results/ui-provider",
+                "coverage": true,
+                "config": "projects/messaging-provider/vitest.config.ts"
+            }
+        },
+        "test-watch": {
+            "executor": "@nx/vite:test",
+            "options": {
+                "watch": true
+            }
+        },
+        "test-ui": {
+            "executor": "@nx/vite:test",
+            "options": {
+                "ui": true
+            }
         }
     }
 }

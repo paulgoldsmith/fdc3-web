@@ -154,11 +154,9 @@ export function subscribeToConnectionAttemptUuids(
     callback: (connectionAttemptUuid: string) => void,
 ): { unsubscribe: () => void } {
     function handleMessage(event: MessageEvent): void {
-        if (isWCPHelloMessage(event.data)) {
-            if (event.source === childWindow) {
-                windowRef.removeEventListener('message', handleMessage);
-                callback(event.data.meta.connectionAttemptUuid);
-            }
+        if (isWCPHelloMessage(event.data) && event.source === childWindow) {
+            windowRef.removeEventListener('message', handleMessage);
+            callback(event.data.meta.connectionAttemptUuid);
         }
     }
 

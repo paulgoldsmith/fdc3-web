@@ -12,11 +12,12 @@ import { BrowserTypes, ChannelError, Contact, Context, EventHandler, Listener, P
 import {
     IMocked,
     Mock,
-    proxyJestModule,
+    proxyModule,
     registerMock,
     setupFunction,
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HEARTBEAT } from '../constants';
 import {
     EventListenerLookup,
@@ -30,7 +31,10 @@ import * as helpersImport from '../helpers';
 import { ChannelMessageHandler } from './channel-message-handler';
 import { recommendedChannels } from './default-channels';
 
-jest.mock('../helpers', () => proxyJestModule(require.resolve('../helpers')));
+vi.mock('../helpers', async () => {
+    const actual = await vi.importActual('../helpers');
+    return proxyModule(actual);
+});
 
 const mockedTargetAppId = `mocked-target-app-id`;
 const mockedTargetInstanceId = `mocked-target-instance-id`;
