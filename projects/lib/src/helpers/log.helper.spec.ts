@@ -135,7 +135,7 @@ describe('log.helper', () => {
             // Create a logLevels object with undefined properties
             const logLevels: GetAgentLogLevels = {
                 connection: undefined as any,
-                proxy: undefined as any
+                proxy: undefined as any,
             };
             const logger = createLogger('test', logLevels);
 
@@ -156,15 +156,15 @@ describe('log.helper', () => {
             // Set log levels to allow DEBUG messages (which by default would be filtered out)
             const logLevels: GetAgentLogLevels = {
                 connection: LogLevel.DEBUG,
-                proxy: LogLevel.DEBUG
+                proxy: LogLevel.DEBUG,
             };
-            
+
             // Create a non-connection message logger so we'll use the proxy level
             const logger = createLogger('test', logLevels);
-            
+
             // Test DEBUG level messages
             logger('DEBUG message', LogLevel.DEBUG);
-            
+
             // Verify debug was called
             expect(mockConsole.debug).toHaveBeenCalled();
         });
@@ -172,32 +172,32 @@ describe('log.helper', () => {
         it('should use console.log for unrecognized log levels', () => {
             // The LogLevel enum in @finos/fdc3 typically has these values:
             // DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3, NONE = 4
-            
+
             // Instead of trying to be clever, let's just mock the functions directly
             // to verify the behavior
             const originalSwitch = console.log;
-            
+
             try {
                 // Create a logger with permissive settings
                 const logLevels: GetAgentLogLevels = {
                     connection: LogLevel.ERROR,
-                    proxy: LogLevel.ERROR
+                    proxy: LogLevel.ERROR,
                 };
-                
+
                 // Override the console.log function directly to ensure it's called
                 console.log = mockConsole.log;
-                
+
                 // Create a logger
                 const logger = createLogger('test', logLevels);
-                
+
                 // Using a value that would normally be within the level range
                 // but doesn't match any standard LogLevel enum values
                 // We'll mock it to a value that ensures it passes the level check
                 const mockValue = -99; // Something that will hit default case
-                
+
                 // Call the logger with our special value
                 logger('Default message', mockValue as any);
-                
+
                 // Verify our mocked console.log was called
                 expect(mockConsole.log).toHaveBeenCalled();
             } finally {

@@ -96,34 +96,34 @@ describe('getAgent', () => {
         // Assert - verify the result is the mock agent
         expect(result).toBe(mockAgent);
     });
-    
+
     it('should configure logger when logLevels is provided', async () => {
         // Import the helpers module
         const helpers = await vi.importActual<typeof import('../helpers/index.js')>('../helpers/index.js');
-        
+
         // Create a spy on the createLogger function
         const createLoggerSpy = vi.spyOn(helpers, 'createLogger');
-        
+
         // Keep original implementation but allow us to track calls
         createLoggerSpy.mockImplementation(helpers.createLogger);
-        
+
         // Setup a reject handler to avoid unhandled promise rejection errors
         try {
             // Act - call getAgent with logLevels
             await getAgent({
                 logLevels: {
                     connection: LogLevel.INFO,
-                    proxy: LogLevel.WARN
+                    proxy: LogLevel.WARN,
                 },
-                timeoutMs: 10 // Short timeout to ensure test completes quickly
+                timeoutMs: 10, // Short timeout to ensure test completes quickly
             }).catch(() => {
                 // Expected error - agent not found
             });
-            
+
             // Assert - verify createLogger was called with the provided logLevels
             expect(createLoggerSpy).toHaveBeenCalledWith('GetAgent', {
                 connection: LogLevel.INFO,
-                proxy: LogLevel.WARN
+                proxy: LogLevel.WARN,
             });
         } finally {
             // Clean up
@@ -661,7 +661,7 @@ describe('getAgent', () => {
             expect(mockPort.start).toHaveBeenCalled();
             expect(mockPort.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
         });
-        
+
         it('should clean up event listeners and timeouts', async () => {
             // Setup - mock the removeEventListener to verify cleanup
             const mockRemoveEventListener = vi.fn();
