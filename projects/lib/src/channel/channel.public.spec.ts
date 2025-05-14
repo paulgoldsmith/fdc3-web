@@ -11,6 +11,7 @@
 import type { BrowserTypes, Channel, Contact, Context, ContextHandler, Listener } from '@finos/fdc3';
 import { ChannelError } from '@finos/fdc3';
 import { IMocked, Mock, proxyModule, registerMock, setupFunction, toBe } from '@morgan-stanley/ts-mocking-bird';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     EventMessage,
     FullyQualifiedAppIdentifier,
@@ -18,16 +19,16 @@ import {
     IProxyOutgoingMessageEnvelope,
     Message,
     ResponseMessage,
-} from '../contracts';
-import { isBroadcastRequest } from '../helpers';
-import * as helpersImport from '../helpers';
-import { ContextListener } from './channel.contracts';
-import { PrivateChannel } from './channel.private';
-import { PublicChannel } from './channel.public';
-import { ChannelFactory } from './channels.factory';
+} from '../contracts.js';
+import { isBroadcastRequest } from '../helpers/index.js';
+import * as helpersImport from '../helpers/index.js';
+import { ContextListener } from './channel.contracts.js';
+import { PrivateChannel } from './channel.private.js';
+import { PublicChannel } from './channel.public.js';
+import { ChannelFactory } from './channels.factory.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

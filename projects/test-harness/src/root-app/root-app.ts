@@ -8,9 +8,9 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import './root-app.scss';
-import './settings-panel';
-import './app-container';
+import './root-app.css';
+import './settings-panel.js';
+import './app-container.js';
 import { AppIdentifier, Channel, Context, OpenError } from '@finos/fdc3';
 import {
     AppDirectoryApplication,
@@ -30,7 +30,7 @@ import {
 import { AppResolverComponent } from '@morgan-stanley/fdc3-web-ui-provider';
 import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { NEW_WINDOW_PUBLIC_CHANNEL, SELECT_APP_PUBLIC_CHANNEL } from '../constants';
+import { NEW_WINDOW_PUBLIC_CHANNEL, SELECT_APP_PUBLIC_CHANNEL } from '../constants.js';
 import {
     type AddApp,
     AppOpenedContextType,
@@ -43,7 +43,7 @@ import {
     SelectableAppsRequestContextType,
     SelectableAppsResponseContextType,
     SelectAppContextType,
-} from '../contracts';
+} from '../contracts.js';
 
 const log = createLogger('RootApp');
 
@@ -66,7 +66,8 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
 
     private openedWindowChannel?: Channel;
 
-    private applications: Promise<AppDirectoryApplication[]>;
+    @state()
+    private applications: AppDirectoryApplication[] = [];
 
     constructor() {
         super();
@@ -80,21 +81,27 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                 }),
         });
 
-        this.applications = Promise.allSettled(
-            appDirectoryUrls.map(appDirectoryUrl => {
-                const hostname = new URL(appDirectoryUrl).hostname;
-                return getAppDirectoryApplications(appDirectoryUrl)
-                    .then(
-                        applications =>
-                            applications
-                                .filter(app => app.appId !== 'test-harness-root-app') //test-harness-root-app is the container and so is always open
-                                .map(app => ({ ...app, appId: `${app.appId}@${hostname}` })), //make appIds fully qualified
-                    )
-                    .catch(() => []);
-            }),
-        ).then(results => results.filter(result => result.status === 'fulfilled').flatMap(result => result.value));
+        this.loadApplications();
+    }
+
+    private async loadApplications(): Promise<void> {
+        const directoryResults = await Promise.allSettled(appDirectoryUrls.map(url => this.loadAppDirectory(url)));
+
+        this.applications = directoryResults
+            .filter(result => result.status === 'fulfilled')
+            .flatMap(result => result.value);
 
         this.initApp();
+    }
+
+    private async loadAppDirectory(url: string): Promise<AppDirectoryApplication[]> {
+        const hostname = new URL(url).hostname;
+
+        const applications = await getAppDirectoryApplications(url).catch(() => []);
+
+        return applications
+            .filter(app => app.appId !== 'test-harness-root-app') //test-harness-root-app is the container and so is always open
+            .map(app => ({ ...app, appId: `${app.appId}@${hostname}` })); //make appIds fully qualified
     }
 
     public async canOpen(params: OpenApplicationStrategyParams): Promise<boolean> {
@@ -190,8 +197,6 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                     });
                 }
             }
-
-            return Promise.reject(`Window was null`); // TODO: use an approved error type
         }
 
         return Promise.reject(OpenError.ResolverUnavailable);
@@ -199,11 +204,9 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
 
     private async initApp(): Promise<void> {
         //open all apps in root domain by default
-        this.applications.then(applications =>
-            applications
-                .filter(application => application.appId.includes('root'))
-                .forEach(application => this.openAppInfo(application)),
-        );
+        this.applications
+            .filter(application => application.appId.includes('root'))
+            .forEach(application => this.openAppInfo(application));
 
         await this.subscribeToSelectedApp();
 
@@ -245,7 +248,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
      * Utilizes LitElement's `html` template literal tag for defining the structure of the component's HTML.
      * @returns {TemplateResult} The template result for the root app's main content.
      */
-    protected render(): TemplateResult {
+    protected override render(): TemplateResult {
         return html`
             <div class="vstack vh-100 overflow-hidden bg-dark-subtle" @click=${this.handleOutsideClick}>
                 ${this.renderHeader()}
@@ -343,7 +346,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
         }
     }
 
-    protected createRenderRoot(): HTMLElement {
+    protected override createRenderRoot(): HTMLElement {
         return this;
     }
 }

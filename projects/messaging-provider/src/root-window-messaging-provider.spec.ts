@@ -14,7 +14,6 @@ import {
     IRootIncomingMessageEnvelope,
     IRootOutgoingMessageEnvelope,
 } from '@morgan-stanley/fdc3-web';
-import * as fdc3Import from '@morgan-stanley/fdc3-web';
 import {
     defineProperty,
     IMocked,
@@ -25,7 +24,7 @@ import {
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RootWindowMessagingProvider } from './root-window-messaging-provider';
+import { RootWindowMessagingProvider } from './root-window-messaging-provider.js';
 
 const channelOne = 'channelOne';
 const channelTwo = 'channelTwo';
@@ -49,9 +48,6 @@ describe('RootWindowMessagingProvider', () => {
 
     let sourceAppIdentifier: FullyQualifiedAppIdentifier;
 
-    // create once as import will only be evaluated and destructured once
-    const mockedFdc3 = Mock.create<typeof fdc3Import>();
-
     beforeEach(() => {
         sourceAppIdentifier = {
             appId: 'source-app-id',
@@ -59,14 +55,6 @@ describe('RootWindowMessagingProvider', () => {
         };
 
         mockConsole = Mock.create<Console>().setup(setupFunction('warn'), setupFunction('log'), setupFunction('error'));
-
-        mockedFdc3.setup(setupFunction('generateUUID', () => mockedGeneratedUuid));
-
-        registerMock(fdc3Import, mockedFdc3.mock);
-    });
-
-    afterEach(() => {
-        reset(fdc3Import);
     });
 
     describe('constructor', () => {

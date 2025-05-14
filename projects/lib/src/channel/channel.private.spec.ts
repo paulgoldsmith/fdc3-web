@@ -17,14 +17,14 @@ import {
     IProxyMessagingProvider,
     IProxyOutgoingMessageEnvelope,
     ResponseMessage,
-} from '../contracts';
-import * as helpersImport from '../helpers';
-import { PrivateChannel } from './channel.private';
-import { PublicChannel } from './channel.public';
-import { ChannelFactory } from './channels.factory';
+} from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { PrivateChannel } from './channel.private.js';
+import { PublicChannel } from './channel.public.js';
+import { ChannelFactory } from './channels.factory.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

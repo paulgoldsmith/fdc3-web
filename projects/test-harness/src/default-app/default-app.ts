@@ -8,11 +8,12 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import '../utils/list-component';
-import '../utils/header-component';
-import '../root-app/app-container';
-import '../styles.scss';
+import '../utils/list-component.js';
+import '../utils/header-component.js';
+import '../root-app/app-container.js';
+import '../styles.css';
 import '@morgan-stanley/fdc3-web-ui-provider';
+import '../utils/select-component.js';
 import type {
     Channel,
     Context,
@@ -37,7 +38,7 @@ import {
 } from '@morgan-stanley/fdc3-web';
 import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import { NEW_WINDOW_PUBLIC_CHANNEL, SELECT_APP_PUBLIC_CHANNEL } from '../constants';
+import { NEW_WINDOW_PUBLIC_CHANNEL, SELECT_APP_PUBLIC_CHANNEL } from '../constants.js';
 import {
     AppOpenedContextType,
     IAppOpenedContext,
@@ -50,9 +51,9 @@ import {
     SelectableAppsRequestContextType,
     SelectableAppsResponseContextType,
     SelectAppContextType,
-} from '../contracts';
-import { getStandardIntents } from '../utils/fdc3';
-import { SelectComponent } from '../utils/select-component';
+} from '../contracts.js';
+import { getStandardIntents } from '../utils/fdc3.js';
+import type { SelectComponent } from '../utils/select-component.js';
 
 const log = createLogger('DefaultApp');
 
@@ -149,7 +150,7 @@ export class DefaultApp extends LitElement {
      * Utilizes LitElement's `html` template literal for defining the structure and content of the UI.
      * @returns {TemplateResult} The complete UI template for the DefaultApp component.
      */
-    protected render(): TemplateResult<1> | undefined {
+    protected override render(): TemplateResult<1> | undefined {
         return html`
             <div class="${this.getSelectedAppClass()}">
                 <app-header
@@ -525,7 +526,7 @@ export class DefaultApp extends LitElement {
         return html`<ms-channel-selector .desktopAgent=${this.agent}></ms-channel-selector>`;
     }
 
-    protected createRenderRoot(): HTMLElement {
+    protected override createRenderRoot(): HTMLElement {
         return this;
     }
 

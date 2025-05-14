@@ -34,15 +34,15 @@ import {
     IProxyOutgoingMessageEnvelope,
     Message,
     ResponseMessage,
-} from '../contracts';
-import { isGetCurrentChannelRequest } from '../helpers';
-import * as helpersImport from '../helpers';
-import { ContextListener } from './channel.contracts';
-import { Channels } from './channels';
-import { ChannelFactory } from './channels.factory';
+} from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { isGetCurrentChannelRequest } from '../helpers/index.js';
+import { ContextListener } from './channel.contracts.js';
+import { ChannelFactory } from './channels.factory.js';
+import { Channels } from './channels.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

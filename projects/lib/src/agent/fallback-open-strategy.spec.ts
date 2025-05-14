@@ -21,11 +21,11 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppDirectoryApplicationType } from '../app-directory.contracts';
 import { OpenApplicationStrategyParams } from '../contracts';
-import * as helpersImport from '../helpers';
+import * as helpersImport from '../helpers/index.js';
 import { FallbackOpenStrategy } from './fallback-open-strategy';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

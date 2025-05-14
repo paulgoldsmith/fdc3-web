@@ -11,7 +11,7 @@
 import { AppIdentifier, AppIntent, Context, DesktopAgent, IntentMetadata, ResolveError } from '@finos/fdc3';
 import { IMocked, Mock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { AppResolverComponent } from './app-resolver.component';
+import { AppResolverComponent } from './app-resolver.component.js';
 
 const mockedTargetAppId = `mocked-target-app-id`;
 const mockedTargetInstanceId = `mocked-target-instance-id`;

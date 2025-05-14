@@ -8,7 +8,7 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { LogLevel } from '../contracts.internal';
+import { LogLevel } from '../contracts.internal.js';
 
 export function createLogger(preface: string): (message: string, level?: LogLevel, ...optionalParams: any[]) => void {
     return (message: string, level?: LogLevel, ...optionalParams: any[]) => {

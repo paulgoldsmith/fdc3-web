@@ -1,54 +1,17 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "lib",
+    "name": "fdc3-web",
     "projectType": "library",
     "targets": {
         "build": {
-            "executor": "@nx/js:tsc",
+            "executor": "@nx/js:tsc"
+        },
+        "generate-docs": {
+            "executor": "nx:run-commands",
             "options": {
-                "outputPath": "{projectRoot}/dist/",
-                "rootDir": "{projectRoot}/src",
-                "main": "index.ts",
-                "tsConfig": "{projectRoot}/tsconfig.json",
-                "assets": [
-                    {
-                        "input": "{workspaceRoot}",
-                        "glob": ".npmignore",
-                        "output": "./"
-                    },
-                    {
-                        "input": "{projectRoot}",
-                        "glob": "package.json",
-                        "output": "./"
-                    },
-                    {
-                        "input": "{projectRoot}",
-                        "glob": "README.md",
-                        "output": "./"
-                    }
-                ]
+                "command": "npx typedoc {projectRoot}/src/index.ts --out docs/{projectName} --options typedoc.json --tsconfig {projectRoot}/tsconfig.lib.json"
             }
         },
-        "test": {
-            "executor": "@nx/vite:test",
-            "options": {
-                "passWithNoTests": true,
-                "reportsDirectory": "../../build/coverage-results/lib",
-                "coverage": true,
-                "config": "projects/lib/vitest.config.ts"
-            }
-        },
-        "test-watch": {
-            "executor": "@nx/vite:test",
-            "options": {
-                "watch": true
-            }
-        },
-        "test-ui": {
-            "executor": "@nx/vite:test",
-            "options": {
-                "ui": true
-            }
-        }
+        "dependsOn": []
     }
 }

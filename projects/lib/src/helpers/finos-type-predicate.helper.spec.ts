@@ -9,7 +9,7 @@
  * and limitations under the License. */
 
 import { describe, expect, it, vi } from 'vitest';
-import * as typePredicates from './finos-type-predicate.helper';
+import * as typePredicates from './finos-type-predicate.helper.js';
 
 const defaultInvalidValues: unknown[] = ['', 'simpleString', [], {}, null, undefined];
 const mockDate = new Date();

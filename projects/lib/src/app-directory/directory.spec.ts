@@ -11,18 +11,18 @@
 import { type AppIdentifier, type AppIntent, type Contact, type Context, type Intent, ResolveError } from '@finos/fdc3';
 import { IMocked, Mock, proxyModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AppDirectoryApplication, AppDirectoryApplicationType, WebAppDetails } from '../app-directory.contracts';
+import { AppDirectoryApplication, AppDirectoryApplicationType, WebAppDetails } from '../app-directory.contracts.js';
 import {
     FullyQualifiedAppIdentifier,
     IAppResolver,
     ResolveForContextPayload,
     ResolveForIntentPayload,
-} from '../contracts';
-import * as helpersImport from '../helpers';
-import { AppDirectory } from './directory';
+} from '../contracts.js';
+import * as helpersImport from '../helpers/index.js';
+import { AppDirectory } from './directory.js';
 
-vi.mock('../helpers', async () => {
-    const actual = await vi.importActual('../helpers');
+vi.mock('../helpers/index.js', async () => {
+    const actual = await vi.importActual('../helpers/index.js');
     return proxyModule(actual);
 });
 

@@ -9,8 +9,9 @@
  * and limitations under the License. */
 
 import { BrowserTypes } from '@finos/fdc3';
-import { AppDirectory } from '../app-directory';
-import { AppDirectoryApplication } from '../app-directory.contracts';
+import { AppDirectoryApplication } from '../app-directory.contracts.js';
+import { AppDirectory } from '../app-directory/index.js';
+import { IRootPublisher } from '../contracts.internal.js';
 import {
     EventMessage,
     FullyQualifiedAppIdentifier,
@@ -21,8 +22,7 @@ import {
     IRootMessagingProvider,
     RequestMessage,
     ResponseMessage,
-} from '../contracts';
-import { IRootPublisher } from '../contracts.internal';
+} from '../contracts.js';
 import {
     createLogger,
     generateUUID,
@@ -30,7 +30,7 @@ import {
     getTimestamp,
     isNonEmptyArray,
     isWCPValidateAppIdentity,
-} from '../helpers';
+} from '../helpers/index.js';
 
 const log = createLogger('RootMessagePublisher');
 

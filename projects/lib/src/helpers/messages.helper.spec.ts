@@ -11,9 +11,9 @@
 import { BrowserTypes } from '@finos/fdc3';
 import { IMocked, Mock, proxyModule, registerMock, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { afterEach, beforeEach, describe, expect, it, Mock as viMock, vi } from 'vitest';
-import { FDC3_VERSION } from '../constants';
-import { FullyQualifiedAppIdentifier, RequestMessage } from '../contracts';
-import * as finosTypePredicateHelper from './finos-type-predicate.helper';
+import { FDC3_VERSION } from '../constants.js';
+import { FullyQualifiedAppIdentifier, RequestMessage } from '../contracts.js';
+import * as finosTypePredicateHelper from './finos-type-predicate.helper.js';
 import {
     createEvent,
     createRequestMessage,
@@ -22,20 +22,20 @@ import {
     generateHelloMessage,
     generateValidateIdentityMessage,
     subscribeToConnectionAttemptUuids,
-} from './messages.helper';
-import * as timestampImport from './timestamp.helper';
-import * as uuidImport from './uuid.helper';
+} from './messages.helper.js';
+import * as timestampImport from './timestamp.helper.js';
+import * as uuidImport from './uuid.helper.js';
 
-vi.mock('./uuid.helper', async () => {
-    const actual = await vi.importActual('./uuid.helper');
+vi.mock('./uuid.helper.js', async () => {
+    const actual = await vi.importActual('./uuid.helper.js');
     return proxyModule(actual);
 });
-vi.mock('./timestamp.helper', async () => {
-    const actual = await vi.importActual('./timestamp.helper');
+vi.mock('./timestamp.helper.js', async () => {
+    const actual = await vi.importActual('./timestamp.helper.js');
     return proxyModule(actual);
 });
-vi.mock('./finos-type-predicate.helper', async () => {
-    const actual = await vi.importActual('./finos-type-predicate.helper');
+vi.mock('./finos-type-predicate.helper.js', async () => {
+    const actual = await vi.importActual('./finos-type-predicate.helper.js');
     return proxyModule(actual);
 });
 
