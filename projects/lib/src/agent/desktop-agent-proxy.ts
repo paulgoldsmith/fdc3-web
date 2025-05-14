@@ -21,6 +21,7 @@ import {
     DesktopAgentDetails,
     EventHandler,
     FDC3EventTypes,
+    GetAgentLogLevels,
     ImplementationMetadata,
     Intent,
     IntentHandler,
@@ -62,6 +63,7 @@ type ProxyDesktopAgentParams = {
     appIdentifier: FullyQualifiedAppIdentifier;
     messagingProvider: IProxyMessagingProvider;
     channelFactory: ChannelFactory;
+    logLevels?: GetAgentLogLevels;
 };
 
 export class DesktopAgentProxy extends MessagingBase implements DesktopAgent {
@@ -69,7 +71,7 @@ export class DesktopAgentProxy extends MessagingBase implements DesktopAgent {
     private channelFactory: ChannelFactory;
 
     constructor(params: ProxyDesktopAgentParams) {
-        super(params.appIdentifier, params.messagingProvider);
+        super(params.appIdentifier, params.messagingProvider, params.logLevels);
 
         this.channelFactory = params.channelFactory;
         this.channels = this.channelFactory.createChannels(params.appIdentifier, this.messagingProvider);

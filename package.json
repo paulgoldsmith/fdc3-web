@@ -9,7 +9,7 @@
         "lint:fix": "nx run-many -t lint --fix",
         "lint": "nx run-many -t lint",
         "build": "nx run-many -t build",
-        "test": "nx run-many -t test --exclude @morgan-stanley/fdc3-web-monorepo",
+        "test": "nx run-many -t test --exclude @morgan-stanley/fdc3-web-monorepo --watch=false",
         "test:watch": "nx test @morgan-stanley/fdc3-web-monorepo --watch",
         "type-check-specs": "nx run-many -t type-check-specs",
         "start": "nx serve test-harness",

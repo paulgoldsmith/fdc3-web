@@ -8,25 +8,69 @@
  * or implied. See the License for the specific language governing permissions
  * and limitations under the License. */
 
-import { LogLevel } from '../contracts.internal.js';
+import { GetAgentLogLevels, LogLevel } from '@finos/fdc3';
 
-export function createLogger(preface: string): (message: string, level?: LogLevel, ...optionalParams: any[]) => void {
+/**
+ * Creates a logger with specified options
+ * @param preface - The prefix for log messages
+ * @param logLevels - Optional settings to control logging behavior
+ * @returns A logger function
+ */
+export function createLogger(
+    preface: string,
+    logLevels?: GetAgentLogLevels,
+): (message: string, level?: LogLevel, ...optionalParams: any[]) => void {
     return (message: string, level?: LogLevel, ...optionalParams: any[]) => {
-        message = `[${preface}] ${message}`;
+        // Determine effective log level based on the message type and configured levels
+        // Connection-related messages include handshakes, connections, and waiting for connections
+        const isConnectionMessage =
+            message.includes('connection') ||
+            message.includes('handshake') ||
+            message.includes('Connection') ||
+            message.includes('waitFor');
 
+        // Heartbeat messages are also connection-related
+        const isHeartbeatMessage = message.includes('heartbeat');
+
+        // Default log level is INFO for connection messages, WARN for everything else
+        let effectiveLogLevel = LogLevel.INFO;
+
+        // Apply user configuration if available
+        if (logLevels) {
+            if ((isConnectionMessage || isHeartbeatMessage) && logLevels.connection !== undefined) {
+                effectiveLogLevel = logLevels.connection;
+            } else if (logLevels.proxy !== undefined) {
+                // Everything that's not a connection or heartbeat message is a proxy message
+                effectiveLogLevel = logLevels.proxy;
+            }
+        }
+
+        // Determine numeric level of current message
+        let messageLevel = LogLevel.INFO; // Default if not provided
+        if (level !== undefined) {
+            messageLevel = level;
+        }
+
+        // Skip if message level is higher than effective level or if level is NONE
+        if (messageLevel > effectiveLogLevel || effectiveLogLevel === LogLevel.NONE) {
+            return;
+        }
+
+        message = `[${preface}] ${message}`;
         optionalParams = [...optionalParams, window.location.href];
 
-        switch (level) {
-            case 'debug':
+        // Output based on message level
+        switch (messageLevel) {
+            case LogLevel.DEBUG:
                 console.debug(message, ...optionalParams);
                 break;
-            case 'info':
+            case LogLevel.INFO:
                 console.info(message, ...optionalParams);
                 break;
-            case 'warn':
+            case LogLevel.WARN:
                 console.warn(message, ...optionalParams);
                 break;
-            case 'error':
+            case LogLevel.ERROR:
                 console.error(message, ...optionalParams);
                 break;
             default:

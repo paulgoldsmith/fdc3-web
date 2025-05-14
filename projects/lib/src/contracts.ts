@@ -16,6 +16,7 @@ import type {
     DesktopAgent,
     FDC3Event,
     FDC3EventTypes,
+    GetAgentLogLevels,
     Intent,
     PrivateChannelEvent,
 } from '@finos/fdc3';
@@ -246,11 +247,13 @@ export type RootDesktopAgentFactoryParams = {
      * retry parameters for the root agent to retry loading the app directory urls
      */
     backoffRetry?: BackoffRetryParams;
+    logLevels?: GetAgentLogLevels;
 };
 
 export type ProxyDesktopAgentFactoryParams = {
     appIdentifier: FullyQualifiedAppIdentifier;
     messagingProviderFactory: MessagingProviderFactory<IProxyMessagingProvider>;
+    logLevels?: GetAgentLogLevels;
 };
 
 export type OpenApplicationStrategyParams = {

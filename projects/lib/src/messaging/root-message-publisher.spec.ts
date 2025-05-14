@@ -92,10 +92,10 @@ describe('RootMessagePublisher', () => {
         expect(mockRootMessagingProvider.withFunction('subscribe')).wasCalledOnce();
     });
 
-    describe('initialise', () => {
+    describe('initialize', () => {
         it('should call determineIdentity with the provided identityUrl', async () => {
             const instance = createInstance();
-            await instance.initialise('mock-identity-url');
+            await instance.initialize('mock-identity-url');
 
             expect(
                 mockDirectory.withFunction('registerNewInstance').withParameters('mock-identity-url'),
@@ -104,14 +104,14 @@ describe('RootMessagePublisher', () => {
 
         it('should call determineIdentity with the current window location if identityUrl is not provided', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             expect(mockDirectory.withFunction('registerNewInstance').withParameters('mock-location')).wasCalledOnce();
         });
 
         it('should set the rootAppIdentifier and return it', async () => {
             const instance = createInstance();
-            const result = await instance.initialise();
+            const result = await instance.initialize();
 
             expect(result).toEqual(rootAppIdentity);
         });
@@ -120,7 +120,7 @@ describe('RootMessagePublisher', () => {
             mockDirectory.setupFunction('registerNewInstance', () => Promise.reject('some error from directory'));
             const instance = createInstance();
 
-            await expect(instance.initialise()).rejects.toThrow('some error from directory');
+            await expect(instance.initialize()).rejects.toThrow('some error from directory');
         });
     });
 
@@ -134,17 +134,17 @@ describe('RootMessagePublisher', () => {
             type: 'getInfoRequest',
         };
 
-        it('should throw an error if initialise has not completed', async () => {
+        it('should throw an error if initialize has not completed', async () => {
             const instance = createInstance();
 
             expect(() => instance.sendMessage({ payload: requestMessage })).toThrow(
-                'sendMessage called before RootMessagePublisher has been initialised',
+                'sendMessage called before RootMessagePublisher has been initialized',
             );
         });
 
         it('should call handleRequestMessage with the message payload and rootAppIdentifier', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
             instance.requestMessageHandler = mockRequestHandler.mock.handler;
 
             instance.sendMessage({ payload: requestMessage });
@@ -170,7 +170,7 @@ describe('RootMessagePublisher', () => {
             const callbackOne = Mock.create<ProxyCallback>().setup(setupFunction('callback'));
             const callbackTwo = Mock.create<ProxyCallback>().setup(setupFunction('callback'));
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             instance.addResponseHandler(callbackOne.mock.callback);
             instance.addResponseHandler(callbackTwo.mock.callback);
@@ -187,7 +187,7 @@ describe('RootMessagePublisher', () => {
 
         it('should publish the response message to the root messaging provider if the source is not the root agent', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {
                 appId: sourceAppId,
@@ -226,7 +226,7 @@ describe('RootMessagePublisher', () => {
 
         it('should log an error if channelId cannot be resolved for unknown source app', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
             const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {
@@ -244,7 +244,7 @@ describe('RootMessagePublisher', () => {
     describe('onMessage', () => {
         it('should log an error when source cannot be resolved for an unknown channelId', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             // Mock console.error
             const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -293,7 +293,7 @@ describe('RootMessagePublisher', () => {
             const callbackOne = Mock.create<ProxyCallback>().setup(setupFunction('callback'));
             const callbackTwo = Mock.create<ProxyCallback>().setup(setupFunction('callback'));
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             instance.addResponseHandler(callbackOne.mock.callback);
             instance.addResponseHandler(callbackTwo.mock.callback);
@@ -310,7 +310,7 @@ describe('RootMessagePublisher', () => {
 
         it('should publish the event message to the root messaging provider', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {
                 appId: sourceAppId,
@@ -329,7 +329,7 @@ describe('RootMessagePublisher', () => {
 
         it(`should send event to multiple sources`, async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {
                 appId: sourceAppId,
@@ -368,7 +368,7 @@ describe('RootMessagePublisher', () => {
 
         it('should log an error if channelId cannot be resolved for unknown source app', async () => {
             const instance = createInstance();
-            await instance.initialise();
+            await instance.initialize();
             const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
             const sourceAppOne: FullyQualifiedAppIdentifier = {

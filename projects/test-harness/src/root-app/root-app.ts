@@ -11,7 +11,7 @@
 import './root-app.css';
 import './settings-panel.js';
 import './app-container.js';
-import { AppIdentifier, Channel, Context, OpenError } from '@finos/fdc3';
+import { AppIdentifier, Channel, Context, LogLevel, OpenError } from '@finos/fdc3';
 import {
     AppDirectoryApplication,
     BackoffRetryParams,
@@ -117,7 +117,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
 
     public async open(params: OpenApplicationStrategyParams): Promise<string> {
         if (isWebAppDetails(params.appDirectoryRecord.details)) {
-            log('Opening WebAppDetails', 'debug', params);
+            log('Opening WebAppDetails', LogLevel.DEBUG, params);
             const newWindow = (document.getElementById('openInWindow') as HTMLInputElement).checked;
 
             if (this.selectedApp != null) {
@@ -129,7 +129,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                     openRequestUuid: generateUUID(),
                 };
 
-                log('Raising OpenAppIntent', 'debug', openAppContext);
+                log('Raising OpenAppIntent', LogLevel.DEBUG, openAppContext);
 
                 params.agent.raiseIntent(OpenAppIntent, openAppContext, this.selectedApp);
 
@@ -137,7 +137,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                     const timeout = setTimeout(() => {
                         log(
                             'Timeout waiting for WindowProxy to be returned from proxy app',
-                            'error',
+                            LogLevel.ERROR,
                             params.appDirectoryRecord,
                         );
                         reject(`Timeout waiting for WindowProxy to be returned from proxy app`);
@@ -147,7 +147,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                         if (appOpenedContext.type === AppOpenedContextType) {
                             if (openAppContext.openRequestUuid === appOpenedContext.openRequestUuid) {
                                 clearTimeout(timeout);
-                                log('Received connectionAttemptUuid from proxy app', 'debug', appOpenedContext);
+                                log('Received connectionAttemptUuid from proxy app', LogLevel.DEBUG, appOpenedContext);
 
                                 resolve(appOpenedContext.connectionAttemptUuid);
                             }
@@ -158,12 +158,12 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                 const details = params.appDirectoryRecord.details as WebAppDetails;
 
                 if (newWindow) {
-                    log('Opening app in new window', 'debug', details);
+                    log('Opening app in new window', LogLevel.DEBUG, details);
                     //open app in new window
                     const windowProxy = window.open(details.url, '_blank', 'popup');
 
                     if (windowProxy == null) {
-                        log('null window returned from window.open', 'error', params.appDirectoryRecord);
+                        log('null window returned from window.open', LogLevel.ERROR, params.appDirectoryRecord);
 
                         return Promise.reject(`Window was null`); // TODO: use an approved error type
                     }
@@ -183,13 +183,13 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                     //open app in iframe
                     this.appDetails = [...this.appDetails, details];
 
-                    log('Opening app in iframe', 'debug', details);
+                    log('Opening app in iframe', LogLevel.DEBUG, details);
 
                     return new Promise(resolve => {
                         // wait for iframe window to be created
                         this.iframeCreationCallbacks.set(details, (iframeWindow, app) => {
                             if (app === details && iframeWindow != null) {
-                                log('iframe window created', 'debug');
+                                log('iframe window created', LogLevel.DEBUG);
                                 const subscriber = subscribeToConnectionAttemptUuids(
                                     window,
                                     iframeWindow,
@@ -298,7 +298,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
     private iframeCreationCallbacks = new Map<WebAppDetails, (window: WindowProxy, app: WebAppDetails) => void>();
 
     private handleNewIframe(event: CustomEvent<{ window: WindowProxy; app?: WebAppDetails }>): void {
-        log('iframe created', 'debug', {
+        log('iframe created', LogLevel.DEBUG, {
             app: event.detail.app,
             callback: event.detail.app != null ? this.iframeCreationCallbacks.get(event.detail.app) : undefined,
         });
