@@ -67,7 +67,7 @@ describe('log.helper', () => {
                 connection: LogLevel.WARN,
                 proxy: LogLevel.NONE,
             };
-            const logger = createLogger('test', logLevels);
+            const logger = createLogger('GetAgent', logLevels);
 
             // DEBUG connection message should not be logged (below WARN level)
             logger('connection DEBUG message', LogLevel.DEBUG);

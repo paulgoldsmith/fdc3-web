@@ -23,21 +23,20 @@ export function createLogger(
     return (message: string, level?: LogLevel, ...optionalParams: any[]) => {
         // Determine effective log level based on the message type and configured levels
         // Connection-related messages include handshakes, connections, and waiting for connections
+        // Determine if this is a connection-related message based on preface and message content
         const isConnectionMessage =
-            message.includes('connection') ||
-            message.includes('handshake') ||
-            message.includes('Connection') ||
-            message.includes('waitFor');
-
-        // Heartbeat messages are also connection-related
-        const isHeartbeatMessage = message.includes('heartbeat');
+            (preface.toLowerCase().includes('getagent') || preface.toLowerCase().includes('desktopagent')) &&
+            (message.toLowerCase().includes('connection') ||
+                message.toLowerCase().includes('handshake') ||
+                message.toLowerCase().includes('waitfor') ||
+                message.toLowerCase().includes('heartbeat'));
 
         // Default log level is INFO for connection messages, WARN for everything else
         let effectiveLogLevel = LogLevel.INFO;
 
         // Apply user configuration if available
         if (logLevels) {
-            if ((isConnectionMessage || isHeartbeatMessage) && logLevels.connection !== undefined) {
+            if (isConnectionMessage && logLevels.connection !== undefined) {
                 effectiveLogLevel = logLevels.connection;
             } else if (logLevels.proxy !== undefined) {
                 // Everything that's not a connection or heartbeat message is a proxy message
