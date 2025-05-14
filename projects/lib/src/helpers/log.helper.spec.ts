@@ -10,7 +10,7 @@
 
 import { GetAgentLogLevels, LogLevel } from '@finos/fdc3';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createLogger } from './log.helper';
+import { createLogger } from './log.helper.js';
 
 describe('log.helper', () => {
     const originalConsoleLog = console.log;
