@@ -19,6 +19,17 @@
                 "^generate-docs"
             ]
         },
+        "typecheck-specs": {
+            "executor": "@nx/js:tsc",
+            "dependsOn": [
+                "^build"
+            ],
+            "options": {
+                "rootDir": "{projectRoot}/src",
+                "main": "index.ts",
+                "tsConfig": "{projectRoot}/tsconfig.spec.json"
+            }
+        },
         "@nx/js:tsc": {
             "dependsOn": [
                 "^build"

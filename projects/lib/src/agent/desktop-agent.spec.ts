@@ -29,7 +29,7 @@ import {
     setupProperty,
 } from '@morgan-stanley/ts-mocking-bird';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import packageJson from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 import { AppDirectoryApplication } from '../app-directory.contracts.js';
 import { AppDirectory } from '../app-directory/index.js';
 import { ChannelMessageHandler } from '../channel/channel-message-handler.js';

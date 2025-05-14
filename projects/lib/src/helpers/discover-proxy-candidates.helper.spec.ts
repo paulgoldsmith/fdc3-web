@@ -9,7 +9,7 @@
  * and limitations under the License. */
 
 import { Mock } from '@morgan-stanley/ts-mocking-bird';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { discoverProxyCandidates } from './discover-proxy-candidates.helper.js';
 
 describe('discoverProxyCandidates', () => {

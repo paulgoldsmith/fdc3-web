@@ -27,7 +27,7 @@ describe('getHostManifest', () => {
     });
 
     it('should return undefined when manifestKey is null', async () => {
-        const result = await getHostManifest({}, null);
+        const result = await getHostManifest({}, null as any); // trick type system into letting us test null
         expect(result).toBeUndefined();
     });
 
