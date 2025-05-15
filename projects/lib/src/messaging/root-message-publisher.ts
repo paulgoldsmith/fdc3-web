@@ -30,9 +30,8 @@ import {
     getTimestamp,
     isNonEmptyArray,
     isWCPValidateAppIdentity,
+    MessageType,
 } from '../helpers/index.js';
-
-const log = createLogger('RootMessagePublisher');
 
 const PUBLISHER_NOT_INITIALIZED = 'RootMessagePublisher not initialized before messages received.';
 const SEND_MESSAGE_INITIALIZATION_ERROR = `sendMessage called before RootMessagePublisher has been initialized`;
@@ -46,6 +45,7 @@ type RequestMessageHandler = (message: RequestMessage, source: FullyQualifiedApp
 export class RootMessagePublisher implements IRootPublisher {
     private instanceIdToChannelId: Partial<Record<string, string>> = {};
     private channelIdToAppIdentifier: Partial<Record<string, FullyQualifiedAppIdentifier>> = {};
+    private log = createLogger(RootMessagePublisher, MessageType.CONNECTION);
 
     private rootAppIdentifier: FullyQualifiedAppIdentifier | undefined;
 
@@ -107,7 +107,7 @@ export class RootMessagePublisher implements IRootPublisher {
      * @returns A promise that resolves to the fully qualified app identifier of the root agent.
      */
     public async initialize(identityUrl?: string): Promise<FullyQualifiedAppIdentifier> {
-        log('Initializing', LogLevel.DEBUG, { identityUrl });
+        this.log('Initializing', LogLevel.DEBUG, { identityUrl });
 
         const { identifier } = await this.directory
             .registerNewInstance(identityUrl ?? this.windowRef.location.href)
@@ -115,7 +115,7 @@ export class RootMessagePublisher implements IRootPublisher {
                 throw new Error(err);
             });
 
-        log('Identity resolved', LogLevel.DEBUG, { identifier });
+        this.log('Identity resolved', LogLevel.DEBUG, { identifier });
 
         this.rootAppIdentifier = identifier;
 
@@ -239,7 +239,7 @@ export class RootMessagePublisher implements IRootPublisher {
         validateMessage: BrowserTypes.WebConnectionProtocol4ValidateAppIdentity,
         channelId: string,
     ): Promise<FullyQualifiedAppIdentifier | undefined> {
-        log('Registering new instance', LogLevel.DEBUG, { validateMessage, channelId });
+        this.log('Registering new instance', LogLevel.DEBUG, { validateMessage, channelId });
 
         const { identifier, application } = await this.directory.registerNewInstance(
             validateMessage.payload.identityUrl,

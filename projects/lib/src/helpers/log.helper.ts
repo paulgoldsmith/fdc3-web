@@ -11,35 +11,67 @@
 import { GetAgentLogLevels, LogLevel } from '@finos/fdc3';
 
 /**
+ * Enum defining the type of messages being logged
+ * This provides explicit control over which log level setting to apply
+ */
+export enum MessageType {
+    CONNECTION = 'connection',
+    PROXY = 'proxy',
+}
+
+/**
+ * Extracts a meaningful name from a class or function
+ * @param classOrFunction - The class or function to get the name from
+ * @returns The class name or a string representation of the function
+ * @throws Will return 'Unknown' if the class or function cannot be identified
+ */
+function getClassName(classOrFunction: ClassOrFunction): string {
+    if (!classOrFunction) {
+        return 'Unknown';
+    }
+
+    // If it's a class constructor/function with a name property
+    if (typeof classOrFunction === 'function' && classOrFunction.name) {
+        return classOrFunction.name;
+    }
+
+    // Try to get the constructor name if it's an instance
+    if (classOrFunction.constructor && classOrFunction.constructor.name) {
+        return classOrFunction.constructor.name;
+    }
+
+    return 'Unknown';
+}
+
+/**
  * Creates a logger with specified options
- * @param preface - The prefix for log messages
+ * @param classType - The class, or function to identify the logger source
+ *                          This can be a class constructor or function
+ * @param messageTypeOrLogLevels - Either MessageType indicating whether logs are connection or proxy related,
+ *                                 or log level settings (for backward compatibility)
  * @param logLevels - Optional settings to control logging behavior
  * @returns A logger function
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+type ClassOrFunction = { new (...args: any[]): any } | Function;
+
 export function createLogger(
-    preface: string,
+    classType: ClassOrFunction,
+    messageType: MessageType,
     logLevels?: GetAgentLogLevels,
 ): (message: string, level?: LogLevel, ...optionalParams: any[]) => void {
-    return (message: string, level?: LogLevel, ...optionalParams: any[]) => {
-        // Determine effective log level based on the message type and configured levels
-        // Connection-related messages include handshakes, connections, and waiting for connections
-        // Determine if this is a connection-related message based on preface and message content
-        const isConnectionMessage =
-            (preface.toLowerCase().includes('getagent') || preface.toLowerCase().includes('desktopagent')) &&
-            (message.toLowerCase().includes('connection') ||
-                message.toLowerCase().includes('handshake') ||
-                message.toLowerCase().includes('waitfor') ||
-                message.toLowerCase().includes('heartbeat'));
+    // Extract the class name to use as a preface
+    const preface = getClassName(classType);
 
+    return (message: string, level?: LogLevel, ...optionalParams: any[]) => {
         // Default log level is INFO for connection messages, WARN for everything else
-        let effectiveLogLevel = LogLevel.INFO;
+        let effectiveLogLevel = messageType === MessageType.CONNECTION ? LogLevel.INFO : LogLevel.WARN;
 
         // Apply user configuration if available
         if (logLevels) {
-            if (isConnectionMessage && logLevels.connection !== undefined) {
+            if (messageType === MessageType.CONNECTION && logLevels.connection !== undefined) {
                 effectiveLogLevel = logLevels.connection;
-            } else if (logLevels.proxy !== undefined) {
-                // Everything that's not a connection or heartbeat message is a proxy message
+            } else if (messageType === MessageType.PROXY && logLevels.proxy !== undefined) {
                 effectiveLogLevel = logLevels.proxy;
             }
         }

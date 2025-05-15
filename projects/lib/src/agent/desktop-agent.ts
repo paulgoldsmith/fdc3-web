@@ -47,12 +47,11 @@ import {
     isFullyQualifiedAppIdentifier,
     isOpenError,
     isResponsePayloadError,
+    MessageType,
 } from '../helpers/index.js';
 import { RootMessagePublisher } from '../messaging/index.js';
 import { DesktopAgentProxy } from './desktop-agent-proxy.js';
 import { FallbackOpenStrategy } from './fallback-open-strategy.js';
-
-const log = createLogger('DesktopAgent');
 
 type RootDesktopAgentParams = {
     appIdentifier: FullyQualifiedAppIdentifier;
@@ -69,6 +68,10 @@ type RootDesktopAgentParams = {
  * request messages are handled by the onMessage function
  */
 export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent {
+    // Create separate loggers for connection-related and proxy-related messages
+    private connectionLog = createLogger(DesktopAgentImpl, MessageType.CONNECTION);
+    private proxyLog = createLogger(DesktopAgentImpl, MessageType.PROXY);
+
     private readonly intentListeners: Partial<Record<Intent, AppIdentifierListenerPair[]>> = {};
     //used when raising intents so desktop agent knows when chosen app has added required intentListener
     private readonly intentListenerCallbacks: Map<
@@ -111,6 +114,10 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         sourceApp: FullyQualifiedAppIdentifier,
     ): Promise<void> {
         // Start heartbeat monitoring when we receive any message from a proxy
+        this.connectionLog('Received message from proxy, ensuring heartbeat is active', LogLevel.DEBUG, {
+            type: requestMessage.type,
+            sourceApp,
+        });
         this.startHeartbeat(sourceApp);
 
         switch (requestMessage.type) {
@@ -809,10 +816,10 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         requestMessage: BrowserTypes.OpenRequest,
         source: FullyQualifiedAppIdentifier,
     ): Promise<void> {
-        log('OpenRequest', LogLevel.DEBUG, { requestMessage, source });
+        this.proxyLog('OpenRequest', LogLevel.DEBUG, { requestMessage, source });
         //check if context argument is invalid
         if (requestMessage.payload.context != null && !isContext(requestMessage.payload.context)) {
-            log('OpenRequest', LogLevel.ERROR, 'MalformedContext', source);
+            this.proxyLog('OpenRequest', LogLevel.ERROR, 'MalformedContext', source);
             this.rootMessagePublisher.publishResponseMessage(
                 createResponseMessage<BrowserTypes.OpenResponse>(
                     'openResponse',
@@ -830,7 +837,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
         const application = await this.directory.getAppDirectoryApplication(requestMessage.payload.app.appId);
 
         if (application == null) {
-            log('OpenRequest', LogLevel.ERROR, 'AppNotFound', source);
+            this.proxyLog('OpenRequest', LogLevel.ERROR, 'AppNotFound', source);
             //app cannot be found in app directory
             this.rootMessagePublisher.publishResponseMessage(
                 createResponseMessage<BrowserTypes.OpenResponse>(
@@ -843,7 +850,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             );
             return;
         }
-        log('OpenRequest application resolved', LogLevel.DEBUG, { application, source });
+        this.proxyLog('OpenRequest application resolved', LogLevel.DEBUG, { application, source });
 
         const validStrategies: IOpenApplicationStrategy[] = await Promise.all(
             this.openStrategies.filter(async strategy => await this.canStrategyOpenApp(application, strategy)),
@@ -856,7 +863,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
 
             //TODO: allow 15 seconds by default for application to open
             try {
-                log('OpenRequest opening application', LogLevel.DEBUG, { application, source, strategy });
+                this.proxyLog('OpenRequest opening application', LogLevel.DEBUG, { application, source, strategy });
 
                 const newAppConnectionAttemptUuid = await strategy.open({
                     appDirectoryRecord: noManifests,
@@ -866,7 +873,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                     ),
                 });
 
-                log('OpenRequest application opened', LogLevel.DEBUG, {
+                this.proxyLog('OpenRequest application opened', LogLevel.DEBUG, {
                     application,
                     source,
                     newAppConnectionAttemptUuid,
@@ -877,7 +884,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                     application,
                 );
 
-                log('OpenRequest appIdentifier resolved', LogLevel.DEBUG, { appIdentifier, source });
+                this.proxyLog('OpenRequest appIdentifier resolved', LogLevel.DEBUG, { appIdentifier, source });
 
                 this.rootMessagePublisher.publishResponseMessage(
                     createResponseMessage<BrowserTypes.OpenResponse>(
@@ -892,7 +899,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                 //pass given context object to opened application via contextListener
                 await this.passContextToOpenedApp(requestMessage, source, appIdentifier);
             } catch (err) {
-                log('OpenRequest error opening application', LogLevel.ERROR, { application, source, err });
+                this.proxyLog('OpenRequest error opening application', LogLevel.ERROR, { application, source, err });
                 this.rootMessagePublisher.publishResponseMessage(
                     createResponseMessage<BrowserTypes.OpenResponse>(
                         'openResponse',
@@ -904,7 +911,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
                 );
             }
         } else {
-            log('OpenRequest no opening strategies found', LogLevel.ERROR, { source });
+            this.proxyLog('OpenRequest no opening strategies found', LogLevel.ERROR, { source });
 
             this.rootMessagePublisher.publishResponseMessage(
                 createResponseMessage<BrowserTypes.OpenResponse>(
@@ -1021,7 +1028,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
 
         this.heartbeatTimers.set(appId, timer);
 
-        log('Starting keep-alive for proxy', LogLevel.DEBUG, appId);
+        this.connectionLog('Starting keep-alive for proxy', LogLevel.DEBUG, appId);
 
         // Send initial appId
         void this.sendHeartbeat(appId);
@@ -1055,7 +1062,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
             const timeout = setTimeout(() => {
                 const currentRetries = this.heartbeatRetries.get(appId) ?? 0;
                 this.heartbeatRetries.set(appId, currentRetries + 1);
-                log(
+                this.connectionLog(
                     `Heartbeat acknowledgment timeout for proxy. Attempt ${currentRetries + 1}/${HEARTBEAT.MAX_TRIES}`,
                     LogLevel.DEBUG,
                     appId,
@@ -1064,7 +1071,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
 
             this.heartbeatTimeouts.set(appId, timeout);
         } catch (error) {
-            log(`Failed to send heartbeat to proxy ${JSON.stringify(appId)}`, LogLevel.ERROR, error);
+            this.connectionLog(`Failed to send heartbeat to proxy ${JSON.stringify(appId)}`, LogLevel.ERROR, error);
             this.handleProxyDisconnect(appId);
         }
     }
@@ -1074,7 +1081,7 @@ export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent 
      * @param appId The app ID of the disconnected proxy
      */
     private handleProxyDisconnect(appId: FullyQualifiedAppIdentifier): void {
-        log(`Proxy ${JSON.stringify(appId)} disconnected`, LogLevel.INFO);
+        this.connectionLog(`Proxy ${JSON.stringify(appId)} disconnected`, LogLevel.INFO);
 
         // Clear timers
         this.clearHeartbeatTimers(appId);

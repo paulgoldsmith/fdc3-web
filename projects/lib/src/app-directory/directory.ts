@@ -34,10 +34,9 @@ import {
     isFullyQualifiedAppIdentifier,
     isWebAppDetails,
     mapApplicationToMetadata,
+    MessageType,
     resolveAppIdentifier,
 } from '../helpers/index.js';
-
-const log = createLogger('AppDirectory');
 
 type IntentContextLookup = { intent: Intent; context: Context[] };
 type DirectoryEntry = { application?: AppDirectoryApplication; instances: string[] };
@@ -46,6 +45,8 @@ type DirectoryEntry = { application?: AppDirectoryApplication; instances: string
 const unknownAppDirectory = 'unknown-app-directory';
 
 export class AppDirectory {
+    private log = createLogger(AppDirectory, MessageType.PROXY);
+
     private readonly directory: Partial<Record<FullyQualifiedAppId, DirectoryEntry>> = {}; //indexed by appId
     private readonly instanceLookup: Partial<Record<string, Set<IntentContextLookup>>> = {}; //indexed by instanceId
 
@@ -151,7 +152,7 @@ export class AppDirectory {
         //ensures app directory has finished loading before intentListeners can be added dynamically
         await this.loadDirectoryPromise;
 
-        log('Registering new instance', LogLevel.DEBUG, identityUrl);
+        this.log('Registering new instance', LogLevel.DEBUG, identityUrl);
         const application = await this.resolveAppIdentity(identityUrl);
 
         const identifier = application != null ? { appId: application.appId, instanceId: generateUUID() } : undefined;
@@ -212,7 +213,7 @@ export class AppDirectory {
         //ensures app directory has finished loading before intentListeners can be added dynamically
         await this.loadDirectoryPromise;
 
-        log('Resolving App Identity', LogLevel.DEBUG, identityUrl);
+        this.log('Resolving App Identity', LogLevel.DEBUG, identityUrl);
 
         /**
          * This is a very simple check for now that just looks for a matching url.
@@ -229,7 +230,7 @@ export class AppDirectory {
             return matchingApp;
         }
 
-        log('No App Identity found', LogLevel.ERROR, identityUrl, this.directory);
+        this.log('No App Identity found', LogLevel.ERROR, identityUrl, this.directory);
 
         return undefined;
     }
@@ -526,7 +527,7 @@ export class AppDirectory {
      * Fetches app data from given app directory urls and stores it in directory
      */
     public async loadAppDirectory(appDirectoryUrls: string[]): Promise<void> {
-        log('Loading app directory', LogLevel.DEBUG, appDirectoryUrls);
+        this.log('Loading app directory', LogLevel.DEBUG, appDirectoryUrls);
         if (appDirectoryUrls == null) {
             return;
         }
@@ -535,7 +536,7 @@ export class AppDirectory {
                 try {
                     const apps: AppDirectoryApplication[] | void = await getAppDirectoryApplications(url, backoffRetry);
 
-                    log(`Loaded app directory (${url})`, LogLevel.DEBUG, apps);
+                    this.log(`Loaded app directory (${url})`, LogLevel.DEBUG, apps);
                     //add all returned apps to app directory using appId as key
                     //TODO: fix possible collisions between apps in different app directories with same appId
                     apps.forEach(app => {
@@ -548,12 +549,12 @@ export class AppDirectory {
                         };
                     });
                 } catch (err) {
-                    log(`Error loading app directory (${url})`, LogLevel.ERROR, err);
+                    this.log(`Error loading app directory (${url})`, LogLevel.ERROR, err);
                 }
             }),
         );
 
-        log('All App directories loaded', LogLevel.INFO, this.directory);
+        this.log('All App directories loaded', LogLevel.INFO, this.directory);
     }
 
     /**

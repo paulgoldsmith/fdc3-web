@@ -10,7 +10,7 @@
 
 import { GetAgentLogLevels, LogLevel } from '@finos/fdc3';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createLogger } from './log.helper.js';
+import { createLogger, MessageType } from './log.helper.js';
 
 describe('log.helper', () => {
     const originalConsoleLog = console.log;
@@ -19,6 +19,11 @@ describe('log.helper', () => {
     const originalConsoleError = console.error;
     const originalConsoleDebug = console.debug;
     let mockConsole: { log: any; info: any; warn: any; error: any; debug: any };
+
+    // Test class to simulate real class instances
+    class TestClass {
+        constructor() {}
+    }
 
     beforeEach(() => {
         mockConsole = {
@@ -46,7 +51,12 @@ describe('log.helper', () => {
 
     describe('createLogger', () => {
         it('should create a logger that logs messages based on level', () => {
-            const logger = createLogger('test');
+            // Create a logger with high enough log levels to ensure our messages get through
+            const logLevels: GetAgentLogLevels = {
+                connection: LogLevel.DEBUG,
+                proxy: LogLevel.DEBUG,
+            };
+            const logger = createLogger(TestClass, MessageType.PROXY, logLevels);
 
             // INFO level message should be logged
             logger('INFO message', LogLevel.INFO);
@@ -67,22 +77,22 @@ describe('log.helper', () => {
                 connection: LogLevel.WARN,
                 proxy: LogLevel.NONE,
             };
-            const logger = createLogger('GetAgent', logLevels);
+            const logger = createLogger(TestClass, MessageType.CONNECTION, logLevels);
 
             // DEBUG connection message should not be logged (below WARN level)
-            logger('connection DEBUG message', LogLevel.DEBUG);
+            logger('DEBUG message', LogLevel.DEBUG);
             expect(mockConsole.debug).not.toHaveBeenCalled();
 
             // INFO connection message should not be logged (below WARN level)
-            logger('connection INFO message', LogLevel.INFO);
+            logger('INFO message', LogLevel.INFO);
             expect(mockConsole.info).not.toHaveBeenCalled();
 
             // WARN connection message should be logged (at WARN level)
-            logger('connection WARN message', LogLevel.WARN);
+            logger('WARN message', LogLevel.WARN);
             expect(mockConsole.warn).toHaveBeenCalled();
 
             // ERROR connection message should be logged (above WARN level)
-            logger('connection ERROR message', LogLevel.ERROR);
+            logger('ERROR message', LogLevel.ERROR);
             expect(mockConsole.error).toHaveBeenCalled();
         });
 
@@ -92,8 +102,7 @@ describe('log.helper', () => {
                 proxy: LogLevel.ERROR,
                 connection: LogLevel.NONE,
             };
-            // Using 'Agent' preface makes this an agent message (proxy category)
-            const logger = createLogger('Agent', logLevels);
+            const logger = createLogger(TestClass, MessageType.PROXY, logLevels);
 
             // INFO proxy message should not be logged
             logger('INFO message', LogLevel.INFO);
@@ -114,20 +123,22 @@ describe('log.helper', () => {
                 connection: LogLevel.NONE,
                 proxy: LogLevel.NONE,
             };
-            const logger = createLogger('test', logLevels);
+            // Test both connection and proxy loggers
+            const connectionLogger = createLogger(TestClass, MessageType.CONNECTION, logLevels);
+            const proxyLogger = createLogger(TestClass, MessageType.PROXY, logLevels);
 
             // Reset mock calls before each test assertion
             mockConsole.error.mockReset();
 
             // Connection message should not be logged
-            logger('connection ERROR message', LogLevel.ERROR);
+            connectionLogger('ERROR message', LogLevel.ERROR);
             expect(mockConsole.error).not.toHaveBeenCalled();
 
             // Reset again before next test
             mockConsole.error.mockReset();
 
-            // Proxy message (anything that's not connection/heartbeat) should not be logged
-            logger('ERROR message', LogLevel.ERROR);
+            // Proxy message should not be logged
+            proxyLogger('ERROR message', LogLevel.ERROR);
             expect(mockConsole.error).not.toHaveBeenCalled();
         });
 
@@ -137,19 +148,24 @@ describe('log.helper', () => {
                 connection: undefined as any,
                 proxy: undefined as any,
             };
-            const logger = createLogger('test', logLevels);
+            // Test both types of loggers
+            const proxyLogger = createLogger(TestClass, MessageType.PROXY, logLevels);
+            const connectionLogger = createLogger(TestClass, MessageType.CONNECTION, logLevels);
 
-            // Should fall back to default behavior - log INFO level messages
-            logger('test message', LogLevel.INFO);
+            // Connection should fall back to default INFO level
+            connectionLogger('test message', LogLevel.INFO);
             expect(mockConsole.info).toHaveBeenCalled();
 
             // Reset mock
             mockConsole.info.mockReset();
 
-            // Connection messages specifically should still use default INFO level
-            const connectionLogger = createLogger('GetAgent', logLevels);
-            connectionLogger('connection handshake message', LogLevel.INFO);
-            expect(mockConsole.info).toHaveBeenCalled();
+            // Proxy should fall back to default WARN level, so INFO shouldn't be logged
+            proxyLogger('test message', LogLevel.INFO);
+            expect(mockConsole.info).not.toHaveBeenCalled();
+
+            // But WARN should be logged for proxy
+            proxyLogger('test message', LogLevel.WARN);
+            expect(mockConsole.warn).toHaveBeenCalled();
         });
 
         it('should handle DEBUG level messages correctly', () => {
@@ -159,13 +175,19 @@ describe('log.helper', () => {
                 proxy: LogLevel.DEBUG,
             };
 
-            // Create a non-connection message logger so we'll use the proxy level
-            const logger = createLogger('test', logLevels);
+            // Create loggers for both connection and proxy types
+            const connectionLogger = createLogger(TestClass, MessageType.CONNECTION, logLevels);
+            const proxyLogger = createLogger(TestClass, MessageType.PROXY, logLevels);
 
             // Test DEBUG level messages
-            logger('DEBUG message', LogLevel.DEBUG);
+            connectionLogger('DEBUG message', LogLevel.DEBUG);
+            expect(mockConsole.debug).toHaveBeenCalled();
 
-            // Verify debug was called
+            // Reset before testing proxy logger
+            mockConsole.debug.mockReset();
+
+            // Test proxy DEBUG messages
+            proxyLogger('DEBUG message', LogLevel.DEBUG);
             expect(mockConsole.debug).toHaveBeenCalled();
         });
 
@@ -188,7 +210,7 @@ describe('log.helper', () => {
                 console.log = mockConsole.log;
 
                 // Create a logger
-                const logger = createLogger('test', logLevels);
+                const logger = createLogger(TestClass, MessageType.CONNECTION, logLevels);
 
                 // Using a value that would normally be within the level range
                 // but doesn't match any standard LogLevel enum values
@@ -204,6 +226,42 @@ describe('log.helper', () => {
                 // Restore the console.log function
                 console.log = originalSwitch;
             }
+        });
+
+        it('should handle class names correctly', () => {
+            // Create a logger with permissive settings
+            const logLevels: GetAgentLogLevels = {
+                connection: LogLevel.DEBUG,
+                proxy: LogLevel.DEBUG,
+            };
+
+            // Create a logger for the TestClass
+            const logger = createLogger(TestClass, MessageType.PROXY, logLevels);
+            const testMessage = 'Test message';
+            logger(testMessage, LogLevel.DEBUG);
+            expect(mockConsole.debug).toHaveBeenCalledWith(
+                expect.stringContaining(`[TestClass] ${testMessage}`),
+                window.location.href,
+            );
+        });
+
+        it('should handle function names correctly', () => {
+            // Create a logger with permissive settings
+            const logLevels: GetAgentLogLevels = {
+                connection: LogLevel.DEBUG,
+                proxy: LogLevel.DEBUG,
+            };
+
+            function TestFunction() {}
+
+            // Create a logger for the TestFunction
+            const logger = createLogger(TestFunction, MessageType.PROXY, logLevels);
+            const testMessage = 'Test message';
+            logger(testMessage, LogLevel.DEBUG);
+            expect(mockConsole.debug).toHaveBeenCalledWith(
+                expect.stringContaining(`[TestFunction] ${testMessage}`),
+                window.location.href,
+            );
         });
     });
 });
