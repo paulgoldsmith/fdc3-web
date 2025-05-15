@@ -13,6 +13,7 @@ import { IMocked, Mock, proxyModule, registerMock, setupFunction } from '@morgan
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppDirectoryApplication, AppDirectoryApplicationType, WebAppDetails } from '../app-directory.contracts.js';
 import {
+    BackoffRetryParams,
     FullyQualifiedAppIdentifier,
     IAppResolver,
     ResolveForContextPayload,
@@ -100,8 +101,8 @@ describe(`${AppDirectory.name} (directory)`, () => {
         registerMock(helpersImport, mockedHelpers.mock);
     });
 
-    function createInstance(appDirectoryUrls?: string[]): AppDirectory {
-        return new AppDirectory(Promise.resolve(mockResolver.mock), appDirectoryUrls);
+    function createInstance(appDirectoryUrls?: string[], backoffRetry?: BackoffRetryParams): AppDirectory {
+        return new AppDirectory(Promise.resolve(mockResolver.mock), appDirectoryUrls, backoffRetry);
     }
 
     it(`should create`, () => {
@@ -688,13 +689,19 @@ describe(`${AppDirectory.name} (directory)`, () => {
     });
 
     describe(`loadAppDirectory`, () => {
-        it(`should add all apps stored in web services pointed to by urls to directory`, async () => {
-            const instance = createInstance([mockedAppDirectoryUrl]);
+        it(`should add all apps in single app directory`, async () => {
+            const backoffRetry: BackoffRetryParams = {
+                baseDelay: 123,
+                maxAttempts: 5,
+            };
+            const instance = createInstance([mockedAppDirectoryUrl], backoffRetry);
 
             await wait();
 
             expect(
-                mockedHelpers.withFunction('getAppDirectoryApplications').withParametersEqualTo(mockedAppDirectoryUrl),
+                mockedHelpers
+                    .withFunction('getAppDirectoryApplications')
+                    .withParametersEqualTo(mockedAppDirectoryUrl, backoffRetry),
             ).wasCalledOnce();
 
             expect(await instance.getAppMetadata({ appId: mockedAppIdOne })).toEqual({
@@ -704,22 +711,20 @@ describe(`${AppDirectory.name} (directory)`, () => {
         });
 
         it(`should do nothing if no app directory urls are passed`, async () => {
-            const instance = createInstance();
+            createInstance([]);
 
-            let error: Error | undefined;
-
-            await instance.loadAppDirectory([]).catch(err => (error = err));
-
-            expect(error).toBeUndefined();
+            expect(mockedHelpers.withFunction('getAppDirectoryApplications')).wasNotCalled();
         });
 
-        it(`should add all apps stored in web services pointed to by urls to directory which directory can access`, async () => {
+        it(`should add all apps in multiple app directories`, async () => {
             const instance = createInstance(['https://incorrect-mock-app-directory', mockedAppDirectoryUrl]);
 
             await wait();
 
             expect(
-                mockedHelpers.withFunction('getAppDirectoryApplications').withParametersEqualTo(mockedAppDirectoryUrl),
+                mockedHelpers
+                    .withFunction('getAppDirectoryApplications')
+                    .withParametersEqualTo(mockedAppDirectoryUrl, undefined),
             ).wasCalledOnce();
 
             expect(await instance.getAppMetadata({ appId: mockedAppIdOne })).toEqual({

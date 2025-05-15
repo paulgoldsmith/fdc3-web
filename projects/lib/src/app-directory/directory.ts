@@ -19,6 +19,7 @@ import {
 } from '@finos/fdc3';
 import { AppDirectoryApplication } from '../app-directory.contracts.js';
 import {
+    BackoffRetryParams,
     FullyQualifiedAppId,
     FullyQualifiedAppIdentifier,
     IAppResolver,
@@ -53,10 +54,11 @@ export class AppDirectory {
     constructor(
         private readonly appResolverPromise: Promise<IAppResolver>,
         appDirectoryUrls?: string[],
+        backoffRetry?: BackoffRetryParams,
     ) {
         //assumes app directory is not modified while root desktop agent is active
         this.appDirectoryUrls = appDirectoryUrls ?? [];
-        this.loadDirectoryPromise = this.loadAppDirectory(this.appDirectoryUrls);
+        this.loadDirectoryPromise = this.loadAppDirectory(this.appDirectoryUrls, backoffRetry);
     }
 
     /**
@@ -522,7 +524,7 @@ export class AppDirectory {
     /**
      * Fetches app data from given app directory urls and stores it in directory
      */
-    public async loadAppDirectory(appDirectoryUrls: string[]): Promise<void> {
+    private async loadAppDirectory(appDirectoryUrls: string[], backoffRetry?: BackoffRetryParams): Promise<void> {
         log('Loading app directory', 'debug', appDirectoryUrls);
         if (appDirectoryUrls == null) {
             return;
@@ -530,7 +532,7 @@ export class AppDirectory {
         await Promise.all(
             appDirectoryUrls.map(async url => {
                 try {
-                    const apps: AppDirectoryApplication[] | void = await getAppDirectoryApplications(url);
+                    const apps: AppDirectoryApplication[] | void = await getAppDirectoryApplications(url, backoffRetry);
 
                     log(`Loaded app directory (${url})`, 'debug', apps);
                     //add all returned apps to app directory using appId as key

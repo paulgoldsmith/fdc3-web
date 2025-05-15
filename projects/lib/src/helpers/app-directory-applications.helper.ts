@@ -10,13 +10,24 @@
 
 import { AppMetadata, BrowserTypes, ImplementationMetadata } from '@finos/fdc3';
 import { AppDirectoryApplication } from '../app-directory.contracts.js';
-import { FDC3_PROVIDER, FDC3_VERSION } from '../constants.js';
-import { FullyQualifiedAppIdentifier } from '../contracts.js';
+import { defaultBackoffRetry, FDC3_PROVIDER, FDC3_VERSION } from '../constants.js';
+import { BackoffRetryParams, FullyQualifiedAppIdentifier } from '../contracts.js';
 
 /**
  * Fetches app directory applications from single app directory url
  */
-export async function getAppDirectoryApplications(url: string): Promise<AppDirectoryApplication[]> {
+export async function getAppDirectoryApplications(
+    url: string,
+    backoffRetry?: BackoffRetryParams,
+): Promise<AppDirectoryApplication[]> {
+    return getAppDirectoryApplicationsImpl(url, { ...defaultBackoffRetry, ...backoffRetry });
+}
+
+export async function getAppDirectoryApplicationsImpl(
+    url: string,
+    backoffRetry: Required<BackoffRetryParams>,
+    attempt = 1,
+): Promise<AppDirectoryApplication[]> {
     try {
         const response = await fetch(`${url}/v2/apps`).then(response => response.json()); // TODO: retry if initial fetch fails
         if (response.message != 'OK' || response.applications == null) {
@@ -25,8 +36,17 @@ export async function getAppDirectoryApplications(url: string): Promise<AppDirec
         }
         return response.applications;
     } catch (err) {
-        console.error(err);
-        throw new Error('Error occurred when reading apps from app directory');
+        if (attempt < backoffRetry.maxAttempts) {
+            const delay = backoffRetry.baseDelay * Math.pow(2, attempt - 1); // Exponential backoff
+            console.warn(`Loading directory attempt ${attempt} failed. Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return getAppDirectoryApplicationsImpl(url, backoffRetry, attempt + 1); // Recursive call
+        } else {
+            console.error(`Max retries reached. Unable to fetch directory applications`, { url });
+            throw new Error(
+                `Error occurred when reading apps from app directory after ${backoffRetry.maxAttempts} attempts`,
+            );
+        }
     }
 }
 

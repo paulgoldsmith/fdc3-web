@@ -14,6 +14,7 @@ import './app-container.js';
 import { AppIdentifier, Channel, Context, OpenError } from '@finos/fdc3';
 import {
     AppDirectoryApplication,
+    BackoffRetryParams,
     createLogger,
     DesktopAgentFactory,
     FullyQualifiedAppIdentifier,
@@ -49,6 +50,11 @@ const log = createLogger('RootApp');
 
 const appDirectoryUrls = ['http://localhost:4299'];
 
+const retryParams: BackoffRetryParams = {
+    maxAttempts: 5,
+    baseDelay: 500,
+};
+
 /**
  * `RootApp` is the entry point for the FDC3 Test Harness application.
  * This component is responsible for initializing the desktop agent, loading the default apps from the configuration,
@@ -78,6 +84,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
                     uiProvider: agent => Promise.resolve(new AppResolverComponent(agent, document)),
                     appDirectoryUrls: appDirectoryUrls, //passes in app directory web service base url
                     openStrategies: [this],
+                    backoffRetry: retryParams,
                 }),
         });
 
@@ -97,7 +104,7 @@ export class RootApp extends LitElement implements IOpenApplicationStrategy {
     private async loadAppDirectory(url: string): Promise<AppDirectoryApplication[]> {
         const hostname = new URL(url).hostname;
 
-        const applications = await getAppDirectoryApplications(url).catch(() => []);
+        const applications = await getAppDirectoryApplications(url, retryParams).catch(() => []);
 
         return applications
             .filter(app => app.appId !== 'test-harness-root-app') //test-harness-root-app is the container and so is always open
