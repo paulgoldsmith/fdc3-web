@@ -98,7 +98,7 @@ describe('app-directory-applications.helper', () => {
             expect(result).toEqual([]);
         });
 
-        it('should throw an error if fetch fails', async () => {
+        it('should throw an error if fetch fails with the default retry behavior', async () => {
             // Mock fetch error
             const mockError = new Error('Network error');
             (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(mockError);
@@ -108,11 +108,37 @@ describe('app-directory-applications.helper', () => {
 
             // Verify the function throws the expected error
             await expect(getAppDirectoryApplications(mockAppDirectoryUrl)).rejects.toThrow(
-                'Error occurred when reading apps from app directory',
+                'Error occurred when reading apps from app directory after 3 attempts',
             );
 
             // Verify console.error was called with the original error
-            expect(consoleErrorSpy).toHaveBeenCalledWith(mockError);
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                `Max retries reached. Unable to fetch directory applications`,
+                { url: mockAppDirectoryUrl },
+            );
+
+            // Restore console.error
+            consoleErrorSpy.mockRestore();
+        });
+
+        it('should throw an error if fetch fails with 5 attempts', async () => {
+            // Mock fetch error
+            const mockError = new Error('Network error');
+            (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(mockError);
+
+            // Mock console.error to prevent test output noise
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+            // Verify the function throws the expected error
+            await expect(getAppDirectoryApplications(mockAppDirectoryUrl, { maxAttempts: 5 })).rejects.toThrow(
+                'Error occurred when reading apps from app directory after 5 attempts',
+            );
+
+            // Verify console.error was called with the original error
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                `Max retries reached. Unable to fetch directory applications`,
+                { url: mockAppDirectoryUrl },
+            );
 
             // Restore console.error
             consoleErrorSpy.mockRestore();

@@ -65,7 +65,11 @@ export class DesktopAgentFactory {
 
         log('Messaging Provider constructed', 'debug');
 
-        const directory = new AppDirectory(appResolverPromise, factoryParams.appDirectoryUrls);
+        const directory = new AppDirectory(
+            appResolverPromise,
+            factoryParams.appDirectoryUrls,
+            factoryParams.backoffRetry,
+        );
         const rootMessagePublisher =
             this.rootMessagePublisherFactory != null
                 ? this.rootMessagePublisherFactory(messagingProvider, directory, window)
@@ -90,7 +94,7 @@ export class DesktopAgentFactory {
             openStrategies: factoryParams.openStrategies,
         });
 
-        log('Agent constructed', 'debug', agent);
+        log('Root Agent constructed', 'debug');
 
         agentResolve(agent);
 

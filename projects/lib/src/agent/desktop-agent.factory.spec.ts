@@ -174,6 +174,7 @@ describe(`${DesktopAgentFactory.name} (desktop-agent.factory)`, () => {
 
             const agent = await instance.createRoot({
                 messagingProviderFactory: mockedFactory.mock.factory,
+                backoffRetry: { maxAttempts: 1, baseDelay: 100 },
             });
 
             expect(agent).toBeDefined();
