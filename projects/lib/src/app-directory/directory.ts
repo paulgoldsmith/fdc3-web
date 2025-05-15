@@ -526,7 +526,7 @@ export class AppDirectory {
     /**
      * Fetches app data from given app directory urls and stores it in directory
      */
-    public async loadAppDirectory(appDirectoryUrls: string[]): Promise<void> {
+    public async loadAppDirectory(appDirectoryUrls: string[], backoffRetry?: BackoffRetryParams): Promise<void> {
         this.log('Loading app directory', LogLevel.DEBUG, appDirectoryUrls);
         if (appDirectoryUrls == null) {
             return;
