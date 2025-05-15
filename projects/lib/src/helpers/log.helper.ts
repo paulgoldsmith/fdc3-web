@@ -35,11 +35,6 @@ function getClassName(classOrFunction: ClassOrFunction): string {
         return classOrFunction.name;
     }
 
-    // Try to get the constructor name if it's an instance
-    if (classOrFunction.constructor && classOrFunction.constructor.name) {
-        return classOrFunction.constructor.name;
-    }
-
     return 'Unknown';
 }
 
