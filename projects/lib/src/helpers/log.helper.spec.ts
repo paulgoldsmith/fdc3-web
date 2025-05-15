@@ -263,5 +263,41 @@ describe('log.helper', () => {
                 window.location.href,
             );
         });
+
+        it('should handle non-class/function names correctly', () => {
+            // Create a logger with permissive settings
+            const logLevels: GetAgentLogLevels = {
+                connection: LogLevel.DEBUG,
+                proxy: LogLevel.DEBUG,
+            };
+
+            // Create a logger for a string
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+            const logger = createLogger({ constructor: {} } as unknown as Function, MessageType.PROXY, logLevels);
+            const testMessage = 'Test message';
+            logger(testMessage, LogLevel.DEBUG);
+            expect(mockConsole.debug).toHaveBeenCalledWith(
+                expect.stringContaining(`[Unknown] ${testMessage}`),
+                window.location.href,
+            );
+        });
+
+        it('should handle null class names correctly', () => {
+            // Create a logger with permissive settings
+            const logLevels: GetAgentLogLevels = {
+                connection: LogLevel.DEBUG,
+                proxy: LogLevel.DEBUG,
+            };
+
+            // Create a logger for a null class name
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+            const logger = createLogger(null as unknown as Function, MessageType.PROXY, logLevels);
+            const testMessage = 'Test message';
+            logger(testMessage, LogLevel.DEBUG);
+            expect(mockConsole.debug).toHaveBeenCalledWith(
+                expect.stringContaining(`[Unknown] ${testMessage}`),
+                window.location.href,
+            );
+        });
     });
 });
