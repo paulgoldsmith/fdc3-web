@@ -24,6 +24,7 @@ import type {
     PrivateChannel as FDC3PrivateChannel,
     PrivateChannelEventTypes,
 } from '@finos/fdc3';
+import { LogLevel } from '@finos/fdc3';
 import {
     AppDirectoryApplication,
     createLogger,
@@ -55,8 +56,6 @@ import {
 import { getStandardIntents } from '../utils/fdc3.js';
 import type { SelectComponent } from '../utils/select-component.js';
 
-const log = createLogger('DefaultApp');
-
 /**
  * `DefaultApp` is a custom web component that serves as the default application.
  * This component is responsible for rendering the application's UI, including headers, supported intents,
@@ -65,6 +64,8 @@ const log = createLogger('DefaultApp');
  */
 @customElement('default-app')
 export class DefaultApp extends LitElement {
+    private proxyLog = createLogger(DefaultApp, 'proxy');
+
     @state()
     private nestedAppDetails: WebAppDetails[] = [];
 
@@ -508,7 +509,7 @@ export class DefaultApp extends LitElement {
     private iframeCreationCallbacks = new Map<WebAppDetails, (window: WindowProxy, app: WebAppDetails) => void>();
 
     private handleNewIframe(event: CustomEvent<{ window: WindowProxy; app?: WebAppDetails }>): void {
-        log('iframe created', 'debug', {
+        this.proxyLog('iframe created', LogLevel.DEBUG, {
             app: event.detail.app,
             callback: event.detail.app != null ? this.iframeCreationCallbacks.get(event.detail.app) : undefined,
         });
@@ -639,7 +640,7 @@ export class DefaultApp extends LitElement {
                 // wait for iframe window to be created
                 this.iframeCreationCallbacks.set(openWindowContext.webDetails, (window, app) => {
                     if (app === openWindowContext.webDetails && window != null) {
-                        log('iframe window created', 'debug');
+                        this.proxyLog('iframe window created', LogLevel.DEBUG);
                         resolve(window);
                     }
                 });
@@ -658,7 +659,7 @@ export class DefaultApp extends LitElement {
                 this.openedWindowChannel?.broadcast(windowOpenedContext);
             });
         } else {
-            log(`No window proxy to return to root app`, 'warn');
+            this.proxyLog(`No window proxy to return to root app`, LogLevel.WARN);
         }
     }
 

@@ -27,5 +27,3 @@ export interface IRootPublisher extends IProxyMessagingProvider {
      */
     awaitAppIdentity(connectionAttemptUuid: string, app: AppDirectoryApplication): Promise<FullyQualifiedAppIdentifier>;
 }
-
-export type LogLevel = 'error' | 'warn' | 'info' | 'debug';

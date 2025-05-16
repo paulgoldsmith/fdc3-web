@@ -155,7 +155,7 @@ describe(`${DesktopAgentFactory.name} (desktop-agent.factory)`, () => {
 
         beforeEach(() => {
             mockPublisher = Mock.create<RootMessagePublisher>().setup(
-                setupFunction('initialise', () => Promise.resolve(appIdentifier)),
+                setupFunction('initialize', () => Promise.resolve(appIdentifier)),
                 setupFunction('addResponseHandler'),
             );
 
