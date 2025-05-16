@@ -75,7 +75,9 @@
             "currentVersionResolver": "git-tag",
             "preserveLocalDependencyProtocols": false,
             "manifestRootsToUpdate": [
-                "projects/{projectName}/"
+                "projects/lib/",
+                "projects/messaging-provider/",
+                "projects/ui-provider/"
             ]
         }
     },
