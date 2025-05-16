@@ -14,10 +14,7 @@ import { GetAgentLogLevels, LogLevel } from '@finos/fdc3';
  * Enum defining the type of messages being logged
  * This provides explicit control over which log level setting to apply
  */
-export enum MessageType {
-    CONNECTION = 'connection',
-    PROXY = 'proxy',
-}
+export type MessageType = 'connection' | 'proxy';
 
 /**
  * Extracts a meaningful name from a class or function
@@ -60,13 +57,13 @@ export function createLogger(
 
     return (message: string, level?: LogLevel, ...optionalParams: any[]) => {
         // Default log level is INFO for connection messages, WARN for everything else
-        let effectiveLogLevel = messageType === MessageType.CONNECTION ? LogLevel.INFO : LogLevel.WARN;
+        let effectiveLogLevel = messageType === 'connection' ? LogLevel.INFO : LogLevel.WARN;
 
         // Apply user configuration if available
         if (logLevels) {
-            if (messageType === MessageType.CONNECTION && logLevels.connection !== undefined) {
+            if (messageType === 'connection' && logLevels.connection !== undefined) {
                 effectiveLogLevel = logLevels.connection;
-            } else if (messageType === MessageType.PROXY && logLevels.proxy !== undefined) {
+            } else if (messageType === 'proxy' && logLevels.proxy !== undefined) {
                 effectiveLogLevel = logLevels.proxy;
             }
         }

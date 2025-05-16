@@ -47,7 +47,6 @@ import {
     isFullyQualifiedAppIdentifier,
     isOpenError,
     isResponsePayloadError,
-    MessageType,
 } from '../helpers/index.js';
 import { RootMessagePublisher } from '../messaging/index.js';
 import { DesktopAgentProxy } from './desktop-agent-proxy.js';
@@ -69,8 +68,8 @@ type RootDesktopAgentParams = {
  */
 export class DesktopAgentImpl extends DesktopAgentProxy implements DesktopAgent {
     // Create separate loggers for connection-related and proxy-related messages
-    private connectionLog = createLogger(DesktopAgentImpl, MessageType.CONNECTION);
-    private proxyLog = createLogger(DesktopAgentImpl, MessageType.PROXY);
+    private connectionLog = createLogger(DesktopAgentImpl, 'connection');
+    private proxyLog = createLogger(DesktopAgentImpl, 'proxy');
 
     private readonly intentListeners: Partial<Record<Intent, AppIdentifierListenerPair[]>> = {};
     //used when raising intents so desktop agent knows when chosen app has added required intentListener

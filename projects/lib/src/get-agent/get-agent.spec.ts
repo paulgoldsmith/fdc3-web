@@ -17,7 +17,6 @@ import {
     generateHelloMessage,
     isWCPHandshake,
     isWCPSuccessResponse,
-    MessageType,
 } from '../helpers/index.js';
 import { getAgent, resetCachedPromise } from './get-agent.js';
 
@@ -122,7 +121,7 @@ describe('getAgent', () => {
             });
 
             // Assert - verify createLogger was called with the provided logLevels
-            expect(createLoggerSpy).toHaveBeenCalledWith(getAgent, MessageType.CONNECTION, {
+            expect(createLoggerSpy).toHaveBeenCalledWith(getAgent, 'connection', {
                 connection: LogLevel.INFO,
                 proxy: LogLevel.WARN,
             });

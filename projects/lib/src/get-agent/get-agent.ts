@@ -27,7 +27,6 @@ import {
     generateValidateIdentityMessage,
     isWCPHandshake,
     isWCPSuccessResponse,
-    MessageType,
 } from '../helpers/index.js';
 import { DefaultProxyMessagingProvider } from '../messaging-provider/index.js';
 
@@ -88,15 +87,15 @@ export const getAgent: GetAgentType = async (params?: GetAgentParams): Promise<D
 };
 
 // Default loggers - will be configured with user options when getAgent is called
-let connectionLog = createLogger(getAgent, MessageType.CONNECTION);
-let proxyLog = createLogger(getAgent, MessageType.PROXY);
+let connectionLog = createLogger(getAgent, 'connection');
+let proxyLog = createLogger(getAgent, 'proxy');
 
 const getAgentImpl: GetAgentType = async (params?: GetAgentParams): Promise<DesktopAgent> => {
     // Configure logging based on params if available
     if (params?.logLevels) {
         // Create new loggers with custom settings
-        connectionLog = createLogger(getAgent, MessageType.CONNECTION, params.logLevels);
-        proxyLog = createLogger(getAgent, MessageType.PROXY, params.logLevels);
+        connectionLog = createLogger(getAgent, 'connection', params.logLevels);
+        proxyLog = createLogger(getAgent, 'proxy', params.logLevels);
     }
 
     proxyLog(`getAgent called with params:`, LogLevel.DEBUG, params);

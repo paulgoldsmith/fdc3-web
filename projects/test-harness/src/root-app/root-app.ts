@@ -24,7 +24,6 @@ import {
     IOpenApplicationStrategy,
     isFullyQualifiedAppId,
     isWebAppDetails,
-    MessageType,
     OpenApplicationStrategyParams,
     subscribeToConnectionAttemptUuids,
     WebAppDetails,
@@ -61,7 +60,7 @@ const retryParams: BackoffRetryParams = {
  */
 @customElement('root-app')
 export class RootApp extends LitElement implements IOpenApplicationStrategy {
-    private log = createLogger(RootApp, MessageType.PROXY);
+    private log = createLogger(RootApp, 'proxy');
 
     @state()
     private appDetails: WebAppDetails[] = [];

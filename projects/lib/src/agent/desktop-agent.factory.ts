@@ -18,7 +18,7 @@ import {
     ProxyDesktopAgentFactoryParams,
     RootDesktopAgentFactoryParams,
 } from '../contracts.js';
-import { createLogger, getWindow, MessageType } from '../helpers/index.js';
+import { createLogger, getWindow } from '../helpers/index.js';
 import { RootMessagePublisher } from '../messaging/index.js';
 import { DefaultRootMessagingProvider } from '../messaging-provider/index.js';
 import { DesktopAgentImpl } from './desktop-agent.js';
@@ -48,7 +48,7 @@ export class DesktopAgentFactory {
      * @returns DesktopAgent
      */
     public async createRoot(factoryParams: RootDesktopAgentFactoryParams): Promise<DesktopAgent> {
-        const log = createLogger(DesktopAgentFactory, MessageType.PROXY, factoryParams.logLevels);
+        const log = createLogger(DesktopAgentFactory, 'proxy', factoryParams.logLevels);
 
         let agentResolve: (value: DesktopAgent) => void = () => {
             throw new Error(`agent Promise is not defined. Unable to update agent`);
@@ -104,7 +104,7 @@ export class DesktopAgentFactory {
     }
 
     public async createProxy(factoryParams: ProxyDesktopAgentFactoryParams): Promise<DesktopAgent> {
-        const log = createLogger(DesktopAgentFactory, MessageType.PROXY, factoryParams.logLevels);
+        const log = createLogger(DesktopAgentFactory, 'proxy', factoryParams.logLevels);
         log('Creating proxy agent', LogLevel.DEBUG, factoryParams);
 
         const messagingProvider = await factoryParams.messagingProviderFactory();

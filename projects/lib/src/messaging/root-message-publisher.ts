@@ -30,7 +30,6 @@ import {
     getTimestamp,
     isNonEmptyArray,
     isWCPValidateAppIdentity,
-    MessageType,
 } from '../helpers/index.js';
 
 const PUBLISHER_NOT_INITIALIZED = 'RootMessagePublisher not initialized before messages received.';
@@ -45,7 +44,7 @@ type RequestMessageHandler = (message: RequestMessage, source: FullyQualifiedApp
 export class RootMessagePublisher implements IRootPublisher {
     private instanceIdToChannelId: Partial<Record<string, string>> = {};
     private channelIdToAppIdentifier: Partial<Record<string, FullyQualifiedAppIdentifier>> = {};
-    private log = createLogger(RootMessagePublisher, MessageType.CONNECTION);
+    private log = createLogger(RootMessagePublisher, 'connection');
 
     private rootAppIdentifier: FullyQualifiedAppIdentifier | undefined;
 

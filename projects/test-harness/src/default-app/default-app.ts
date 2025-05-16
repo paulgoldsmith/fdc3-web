@@ -34,7 +34,6 @@ import {
     isFullyQualifiedAppIdentifier,
     isPrivateChannel,
     isPrivateChannelEventTypes,
-    MessageType,
     subscribeToConnectionAttemptUuids,
     WebAppDetails,
 } from '@morgan-stanley/fdc3-web';
@@ -65,7 +64,7 @@ import type { SelectComponent } from '../utils/select-component.js';
  */
 @customElement('default-app')
 export class DefaultApp extends LitElement {
-    private proxyLog = createLogger(DefaultApp, MessageType.PROXY);
+    private proxyLog = createLogger(DefaultApp, 'proxy');
 
     @state()
     private nestedAppDetails: WebAppDetails[] = [];

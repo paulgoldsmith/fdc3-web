@@ -19,7 +19,7 @@ import {
     RequestMessage,
     ResponseMessage,
 } from '../contracts.js';
-import { createLogger, generateUUID, MessageType } from '../helpers/index.js';
+import { createLogger, generateUUID } from '../helpers/index.js';
 
 /**
  * Base class for anything that needs to send and receive request and response messages
@@ -34,7 +34,7 @@ export abstract class MessagingBase {
         protected readonly logLevels?: GetAgentLogLevels,
     ) {
         this.incomingMessageCallbacks = new Map<string, (value: Message) => void>();
-        this.log = createLogger(MessagingBase, MessageType.PROXY, logLevels);
+        this.log = createLogger(MessagingBase, 'proxy', logLevels);
         this.log('MessagingBase constructor', LogLevel.DEBUG);
 
         this.subscribeToMessages();

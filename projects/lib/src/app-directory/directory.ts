@@ -34,7 +34,6 @@ import {
     isFullyQualifiedAppIdentifier,
     isWebAppDetails,
     mapApplicationToMetadata,
-    MessageType,
     resolveAppIdentifier,
 } from '../helpers/index.js';
 
@@ -45,7 +44,7 @@ type DirectoryEntry = { application?: AppDirectoryApplication; instances: string
 const unknownAppDirectory = 'unknown-app-directory';
 
 export class AppDirectory {
-    private log = createLogger(AppDirectory, MessageType.PROXY);
+    private log = createLogger(AppDirectory, 'proxy');
 
     private readonly directory: Partial<Record<FullyQualifiedAppId, DirectoryEntry>> = {}; //indexed by appId
     private readonly instanceLookup: Partial<Record<string, Set<IntentContextLookup>>> = {}; //indexed by instanceId
