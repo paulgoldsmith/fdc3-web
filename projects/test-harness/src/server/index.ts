@@ -85,7 +85,7 @@ const rootApp = {
     },
 };
 
-app.get('/(v2/)?apps', (_, res) => {
+app.get('/v2/apps', (_, res) => {
     const allApplicationsResponse = {
         applications: [rootApp, ...config.applications],
         message: 'OK',
@@ -94,7 +94,7 @@ app.get('/(v2/)?apps', (_, res) => {
 });
 
 [rootApp, ...config.applications].forEach(application => {
-    app.get(`/(v2/)?apps/${application.appId}`, (_, res) => {
+    app.get(`/v2/apps/${application.appId}`, (_, res) => {
         res.send(application);
     });
 });
