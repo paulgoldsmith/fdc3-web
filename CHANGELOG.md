@@ -1,3 +1,7 @@
+## 0.3.1 (2025-06-03)
+
+Fixed a bug with `app-resolver.default` and `app-resolver.component` that did not automatically select an unqualified app id when there was only 1 suitable app available.
+
 ## 0.3.0 (2025-05-16)
 
 ### 🚀 Features
