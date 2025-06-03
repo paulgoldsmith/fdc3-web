@@ -159,7 +159,7 @@ npm run test
 npm run lint 
 
 # Run a full build (Compile, Tests, Lint)
-npm run build-release
+npm run build:release
 
 # test a single project
 npx nx test fdc3-web 
