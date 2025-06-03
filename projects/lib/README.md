@@ -52,7 +52,7 @@ To contribute to the FDC3 library and its plugins, follow these steps:
 1. Fork the repository on BitBucket.
 2. Clone the forked repository to your local machine.
 3. Install the required dependencies using `npm install`.
-4. Make your changes and ensure that the full build is executing successfully with `npm run build-release`.
+4. Make your changes and ensure that the full build is executing successfully with `npm run build:release`.
 5. Submit a pull request with your changes, providing a clear description of the modifications made.
 
 We welcome contributions from the community and appreciate your efforts in improving the FDC3 library.
