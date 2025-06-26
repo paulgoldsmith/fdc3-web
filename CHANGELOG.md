@@ -1,3 +1,8 @@
+## 0.3.2 (2025-06-26)
+
+ - Fixed a bug with `createRoot` that did not correctly pass the `identityUrl` to the `rootMessagePublisher`
+ - Changed the `getAppDirectoryApplicationsImpl` to not append `/v2/apps` to app directory urls to allow non standard urls to be used
+
 ## 0.3.1 (2025-06-03)
 
 Fixed a bug with `app-resolver.default` and `app-resolver.component` that did not automatically select an unqualified app id when there was only 1 suitable app available.
