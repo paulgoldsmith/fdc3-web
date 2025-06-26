@@ -76,7 +76,7 @@ export class DesktopAgentFactory {
                 : new RootMessagePublisher(messagingProvider, directory, window);
 
         // retrieve the root agent details from the app directory
-        const appIdentifier = await rootMessagePublisher.initialize();
+        const appIdentifier = await rootMessagePublisher.initialize(factoryParams.identityUrl);
 
         if (appIdentifier == null) {
             log('AppIdentifier could not be resolved', LogLevel.ERROR);
